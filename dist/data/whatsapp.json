@@ -1,0 +1,138 @@
+{
+    "intro_payload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "text",
+                "text": "Ciao! Benvenuto su Gastromia😋"
+            },
+            "body": {
+                "text": "Ecco cosa c'è nel menù di oggi:\n\n🥙 Poke \n🥗 Salads \n🫔 Pita\n🌯 Burrito\n\nClicca sui bottoni quì sotto per scoprire i nostri piatti 👇"
+            },
+            "footer": {
+                "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_POKE",
+                            "title": "Poke 🥙"
+                        }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_BURRITO",
+                            "title": "Burrito 🌯"
+                        }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_MORE",
+                            "title": "Altro"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "poke_payload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "image",
+                "image": {
+                    "link": "https://static.cookist.it/wp-content/uploads/sites/21/2020/06/poke-bowl-salmone-avocado.jpg"
+                }
+            },
+            "body": {
+                "text": "Ecco i nostri poke:\n\nSalmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_"
+            },
+            "footer": {
+                "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_POKE_MAKE_YOUR_OWN",
+                            "title": "Poke🥙Fai-da-te"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "poke_diy_payload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "text",
+                "text": "Poke Fai-da-te"
+            },
+            "body": {
+                "text": "*Size*\nRegular 3.50 €\nLarge 4.50 €\n\n*Base*\nRiso sushi\nRiso basmati\nRiso integrale\nLattuga\n\n*Proteine*\nSalmone 1.00 €\nSalmone cotto 1.00 €\nGamberetti 1.00 €\nPollo teriyaki 1.00 €\nTonno 1.00 €\nTuna tataki 2.00 €\nPollo alla griglia 1.00 €\nSpicy chicken 1.50 €\n\n*Greens*\nEdamame 0.20 €\nVerza viola 0.20 €\nCarote 0.20 €\nCetrioli 0.20 €\nMais 0.20 €\nCeci 0.20 €\nPomodorini 0.20 €\nJalapeño 0.20 €\nBarbabietola 0.20 €\nMango 0.50 €\nSpicy broccoli 0.50 €\nBroccoli 0.50 €\nFagiolini 0.50 €\nGuacamole 0.50 €\nAvocado 0.50 €\nAlga wakame 0.50 €\n\n*Formaggi*\nParmigiano 0.50 €\nFeta 0.50 €\nQueso 0.50 €\nPhiladelphia 0.50 €\n\n*Toppings*\nSemi di sesamo 0.20 €\nMisto semi 0.50 €\nMandorle 0.50 €\nNoci 0.50 €\nOlive 0.20 €\nUva passa 0.50 €\n\n*Dressings*\nSoia 0.50 €\nTeriyaki 0.50 €\nPonzu 0.50 €\nSpicy mayo 0.50 €\nOlio EVO 0.50 €\nMiele e senape 0.50 €\nSalsa alla curcuma 0.50 €\nLime squeeze 0.50 €\nCitronette 0.50 €\nVegan mayo 0.50 €\nWasabi honey soy 0.50 €\n\nPer ordinare scrivi:\nordine [orario] [nome]\nbowl\n-regular\n-riso sushi\n-salmone\n-avocado\n..."
+            },
+            "footer": {
+                "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_POKE_MAKE_YOUR_OWN",
+                            "title": "Poke🥙Fai-da-te"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "more_payload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "text",
+                "text": "Ciao 😋"
+            },
+            "body": {
+                "text": "Oltre a poke e burrito abbiamo anche.."
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_POKE",
+                            "title": "Salads 🍲"
+                        }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_BURRITO",
+                            "title": "Pita 🌯"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
