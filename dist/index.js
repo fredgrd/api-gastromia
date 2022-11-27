@@ -5,11 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const database_1 = require("./database");
-const dotenv_1 = __importDefault(require("dotenv"));
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
 const webhooks_1 = require("./routes/webhooks");
-dotenv_1.default.config();
+// dotenv.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 8000;
 // Connect to database

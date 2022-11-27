@@ -82,17 +82,19 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
         if (req.body.entry[0].changes[0].value.messages[0].type === "interactive") {
             const replyId = req.body.entry[0].changes[0].value.messages[0].interactive.button_reply
                 .id;
-            console.log("INTERACTIVE", replyId);
             switch (replyId) {
                 case "REPLY_BUTTON_POKE":
                     command = "poke";
+                    break;
+                case "REPLY_BUTTON_POKE_MAKE_YOUR_OWN":
+                    command = "pokediy";
                     break;
                 default:
                     command = "ciao";
             }
             yield loggerService.createLog({
                 name: "facebookEvent - interactive",
-                body: `${fromNumber} ${command}`,
+                body: `${fromNumber} ${command} ${replyId}`,
             });
         }
         yield loggerService.createLog({
@@ -110,7 +112,7 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 });
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Poke, fromNumber);
                 break;
-            case "poke🥙fai-da-te":
+            case "pokediy":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.PokeDIY, fromNumber);
                 break;
             case "altro":
@@ -121,8 +123,6 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     name: "facebookEvent - sending default",
                     body: `${fromNumber} ${command}`,
                 });
-                console.log("DEFAULT", command, fromNumber);
-                // break;
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Intro, fromNumber);
         }
     }

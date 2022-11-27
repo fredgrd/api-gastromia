@@ -49,13 +49,11 @@
         "interactive": {
             "type": "button",
             "header": {
-                "type": "image",
-                "image": {
-                    "link": "https://static.cookist.it/wp-content/uploads/sites/21/2020/06/poke-bowl-salmone-avocado.jpg"
-                }
+                "type": "text",
+                "text": "Ecco i nostri poke:"
             },
             "body": {
-                "text": "Ecco i nostri poke:\n\nSalmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_"
+                "text": "Salmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_"
             },
             "footer": {
                 "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
