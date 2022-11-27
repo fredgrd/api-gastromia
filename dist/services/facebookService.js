@@ -41,69 +41,12 @@ class FacebookService {
                     payload = whatsapp_json_1.default.more_payload;
                     break;
                 case WhatsappMessage.Poke:
-                    payload = {
-                        messaging_product: "whatsapp",
-                        recipient_type: "individual",
-                        type: "interactive",
-                        interactive: {
-                            type: "button",
-                            header: {
-                                type: "text",
-                                text: "Ecco i nostri poke:",
-                            },
-                            body: {
-                                text: "Salmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_",
-                            },
-                            footer: {
-                                text: "Per ordinare scrivi: ordine [orario] [nome] [piatti]",
-                            },
-                            action: {
-                                buttons: [
-                                    {
-                                        type: "reply",
-                                        reply: {
-                                            id: "REPLY_BUTTON_POKE_MAKE_YOUR_OWN",
-                                            title: "Poke🥙Fai-da-te",
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    };
+                    payload = whatsapp_json_1.default.poke_payload;
                     break;
                 case WhatsappMessage.PokeDIY:
                     payload = whatsapp_json_1.default.poke_diy_payload;
                     break;
             }
-            payload = {
-                messaging_product: "whatsapp",
-                recipient_type: "individual",
-                type: "interactive",
-                interactive: {
-                    type: "button",
-                    header: {
-                        type: "text",
-                        text: "Ecco i nostri poke:",
-                    },
-                    body: {
-                        text: "Salmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_",
-                    },
-                    footer: {
-                        text: "Per ordinare scrivi: ordine [orario] [nome] [piatti]",
-                    },
-                    action: {
-                        buttons: [
-                            {
-                                type: "reply",
-                                reply: {
-                                    id: "REPLY_BUTTON_POKE_MAKE_YOUR_OWN",
-                                    title: "Poke🥙Fai-da-te",
-                                },
-                            },
-                        ],
-                    },
-                },
-            };
             try {
                 yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, Object.assign({ to: to }, payload), {
                     headers: {
