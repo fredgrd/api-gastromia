@@ -10,6 +10,7 @@ export enum WhatsappMessage {
   Burrito,
   Salad,
   Pita,
+  Drinks,
 }
 
 export class FacebookService {
@@ -50,6 +51,9 @@ export class FacebookService {
         break;
       case WhatsappMessage.Pita:
         payload = whatsappPayloads.pita_payload;
+        break;
+      case WhatsappMessage.Drinks:
+        payload = whatsappPayloads.drinks_payload;
         break;
     }
 

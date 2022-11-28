@@ -68,6 +68,9 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         case "REPLY_BUTTON_PITA":
           command = "pita";
           break;
+        case "REPLY_BUTTON_DRINKS":
+          command = "drinks";
+          break;
         default:
           command = "ciao";
       }
@@ -101,6 +104,9 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         break;
       case "pita":
         await facebookService.sendMessage(WhatsappMessage.Pita, fromNumber);
+        break;
+      case "drinks":
+        await facebookService.sendMessage(WhatsappMessage.Drinks, fromNumber);
         break;
       default:
         await facebookService.sendMessage(WhatsappMessage.Intro, fromNumber);

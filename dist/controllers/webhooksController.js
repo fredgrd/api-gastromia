@@ -69,6 +69,9 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 case "REPLY_BUTTON_PITA":
                     command = "pita";
                     break;
+                case "REPLY_BUTTON_DRINKS":
+                    command = "drinks";
+                    break;
                 default:
                     command = "ciao";
             }
@@ -98,6 +101,9 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 break;
             case "pita":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Pita, fromNumber);
+                break;
+            case "drinks":
+                yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Drinks, fromNumber);
                 break;
             default:
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Intro, fromNumber);
