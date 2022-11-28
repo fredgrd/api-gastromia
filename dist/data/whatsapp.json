@@ -97,14 +97,14 @@
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_MENU",
-                            "title": "Menu"
+                            "title": "Menu 📕"
                         }
                     },
                     {
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_DRINKS",
-                            "title": "Drinks"
+                            "title": "Drinks 🥤"
                         }
                     }
                 ]
@@ -135,14 +135,14 @@
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_MENU",
-                            "title": "Menu"
+                            "title": "Menu 📕"
                         }
                     },
                     {
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_DRINKS",
-                            "title": "Drinks"
+                            "title": "Drinks 🥤"
                         }
                     }
                 ]
@@ -177,6 +177,13 @@
                             "id": "REPLY_BUTTON_PITA",
                             "title": "Pita 🫔"
                         }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_DRINKS",
+                            "title": "Drinks 🥤"
+                        }
                     }
                 ]
             }
@@ -206,14 +213,14 @@
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_MENU",
-                            "title": "Menu"
+                            "title": "Menu 📕"
                         }
                     },
                     {
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_DRINKS",
-                            "title": "Drinks"
+                            "title": "Drinks 🥤"
                         }
                     }
                 ]
@@ -244,14 +251,50 @@
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_MENU",
-                            "title": "Menu"
+                            "title": "Menu 📕"
                         }
                     },
                     {
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_DRINKS",
-                            "title": "Drinks"
+                            "title": "Drinks 🥤"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "drinks_payload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "text",
+                "text": "I nostri drinks 🥤"
+            },
+            "body": {
+                "text": "Estratto Mela Zenzero 2.50 €\nEstratto Mela Bergamotto 2.50 €\nEstratto Mela Mirtillo 2.50 €\n\nAcqua S. Benedetto Naturale 1.00 €\nAcqua Nepi 1.00 €\nAcqua S. Pellegrino 1.00 €\n\nCoca-Cola 1.50 €'\nCoca-Cola Zero 1.50 €\n\nLurisia Gazzosa 2.00 €\nLurisia Chinotto 2.00 €\n\nEstathé pesca 2.00 €\nEstathé limone 2.00 €\n\nRedBull 2.50 €"
+            },
+            "footer": {
+                "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_MENU",
+                            "title": "Menu 📕"
+                        }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_DRINKS",
+                            "title": "Drinks 🥤"
                         }
                     }
                 ]
