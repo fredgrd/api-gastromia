@@ -93,6 +93,9 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
             case "more":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.More, fromNumber);
                 break;
+            case "salad":
+                yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Salad, fromNumber);
+                break;
             default:
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Intro, fromNumber);
         }

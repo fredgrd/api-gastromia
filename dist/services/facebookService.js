@@ -22,6 +22,7 @@ var WhatsappMessage;
     WhatsappMessage[WhatsappMessage["Poke"] = 2] = "Poke";
     WhatsappMessage[WhatsappMessage["PokeDIY"] = 3] = "PokeDIY";
     WhatsappMessage[WhatsappMessage["Burrito"] = 4] = "Burrito";
+    WhatsappMessage[WhatsappMessage["Salad"] = 5] = "Salad";
 })(WhatsappMessage = exports.WhatsappMessage || (exports.WhatsappMessage = {}));
 class FacebookService {
     constructor() {
@@ -49,6 +50,9 @@ class FacebookService {
                     break;
                 case WhatsappMessage.Burrito:
                     payload = whatsapp_json_1.default.burrito_payload;
+                    break;
+                case WhatsappMessage.Salad:
+                    payload = whatsapp_json_1.default.salad_payload;
                     break;
             }
             try {
