@@ -49,11 +49,11 @@
         "interactive": {
             "type": "button",
             "header": {
-                "type": "text",
-                "text": "Ecco i nostri poke:"
+                "type": "image",
+                "image": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke_mix-min.jpg"
             },
             "body": {
-                "text": "Salmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_"
+                "text": "Ecco i nostri poke:\n\nSalmon Basic 🐟\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_"
             },
             "footer": {
                 "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
@@ -64,7 +64,7 @@
                         "type": "reply",
                         "reply": {
                             "id": "REPLY_BUTTON_POKE_MAKE_YOUR_OWN",
-                            "title": "Poke🥙Fai-da-te"
+                            "title": "Fai-da-te"
                         }
                     }
                 ]
@@ -86,17 +86,6 @@
             },
             "footer": {
                 "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "REPLY_BUTTON_POKE_MAKE_YOUR_OWN",
-                            "title": "Poke🥙Fai-da-te"
-                        }
-                    }
-                ]
             }
         }
     },

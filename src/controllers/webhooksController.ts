@@ -3,36 +3,6 @@ import axios from "axios";
 import { LoggerService } from "../services/loggerService";
 import { WhatsappMessage, FacebookService } from "../services/facebookService";
 
-export const test = async (req: Request, res: Response) => {
-  try {
-    const response = await axios.post(
-      "https://graph.facebook.com/v15.0/100711486214814/messages",
-      {
-        messaging_product: "whatsapp",
-        to: "393478842092",
-        type: "template",
-        template: {
-          name: "hello_world",
-          language: {
-            code: "en_US",
-          },
-        },
-      },
-      {
-        headers: {
-          Authorization:
-            "Bearer EAAGliejcNi4BAMlAKATPspUvS8ZChgCg6DLb0uBOYyQQqARcYpOPSqB6ZAScnHMnOMJw4RkLhKwbM5IIadHRgrE0zc7C7K9ZAwmfzZCdWJAkAL26dYUwU6Jt7JPxpKorZCWRMz0ZCNUeAPND3t8ZB136DKBqxq9dycrRDidpyH5qGjqoSKWgB6bMPIfpqYfagup8kZBpaXJ4Ts8CUYEupSuiFcaumXPmdV0ZD",
-        },
-      }
-    );
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
-  }
-};
-
 export const verifyWhatsapp = (req: Request, res: Response) => {
   const challengeCode = req.query["hub.challenge"];
   const tokenToVerify = req.query["hub.verify_token"];
@@ -45,7 +15,7 @@ export const verifyWhatsapp = (req: Request, res: Response) => {
 };
 
 export const handleWhatsappEvents = async (req: Request, res: Response) => {
-  const loggerService = new LoggerService()
+  const loggerService = new LoggerService();
 
   await loggerService.createLog({
     name: "[facebookEvent] Incoming request",
@@ -66,7 +36,7 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
   ) {
     const facebookService = new FacebookService();
     const fromNumber = req.body.entry[0].changes[0].value.messages[0].from;
-    const eventId = req.body.entry[0].changes[0].value.messages[0].id
+    const eventId = req.body.entry[0].changes[0].value.messages[0].id;
     let command: string = "";
 
     if (req.body.entry[0].changes[0].value.messages[0].type === "text") {
@@ -85,6 +55,9 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
           break;
         case "REPLY_BUTTON_POKE_MAKE_YOUR_OWN":
           command = "pokediy";
+          break;
+        case "REPLY_BUTTON_MORE":
+          command = "more";
           break;
         default:
           command = "ciao";
@@ -108,7 +81,7 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
       case "pokediy":
         await facebookService.sendMessage(WhatsappMessage.PokeDIY, fromNumber);
         break;
-      case "altro":
+      case "more":
         await facebookService.sendMessage(WhatsappMessage.More, fromNumber);
         break;
       default:

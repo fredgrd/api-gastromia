@@ -6,5 +6,4 @@ const webhooksController_1 = require("../controllers/webhooksController");
 const router = (0, express_1.Router)();
 exports.webhooksRouter = router;
 router.get("/whatsapp", webhooksController_1.verifyWhatsapp);
-router.get("/whatsapp/test", webhooksController_1.test);
 router.post("/whatsapp", webhooksController_1.handleWhatsappEvents);

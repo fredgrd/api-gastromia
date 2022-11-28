@@ -8,39 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleWhatsappEvents = exports.verifyWhatsapp = exports.test = void 0;
-const axios_1 = __importDefault(require("axios"));
+exports.handleWhatsappEvents = exports.verifyWhatsapp = void 0;
 const loggerService_1 = require("../services/loggerService");
 const facebookService_1 = require("../services/facebookService");
-const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const response = yield axios_1.default.post("https://graph.facebook.com/v15.0/100711486214814/messages", {
-            messaging_product: "whatsapp",
-            to: "393478842092",
-            type: "template",
-            template: {
-                name: "hello_world",
-                language: {
-                    code: "en_US",
-                },
-            },
-        }, {
-            headers: {
-                Authorization: "Bearer EAAGliejcNi4BAMlAKATPspUvS8ZChgCg6DLb0uBOYyQQqARcYpOPSqB6ZAScnHMnOMJw4RkLhKwbM5IIadHRgrE0zc7C7K9ZAwmfzZCdWJAkAL26dYUwU6Jt7JPxpKorZCWRMz0ZCNUeAPND3t8ZB136DKBqxq9dycrRDidpyH5qGjqoSKWgB6bMPIfpqYfagup8kZBpaXJ4Ts8CUYEupSuiFcaumXPmdV0ZD",
-            },
-        });
-        res.sendStatus(200);
-    }
-    catch (error) {
-        console.log(error);
-        res.sendStatus(500);
-    }
-});
-exports.test = test;
 const verifyWhatsapp = (req, res) => {
     const challengeCode = req.query["hub.challenge"];
     const tokenToVerify = req.query["hub.verify_token"];
@@ -86,6 +57,9 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 case "REPLY_BUTTON_POKE_MAKE_YOUR_OWN":
                     command = "pokediy";
                     break;
+                case "REPLY_BUTTON_MORE":
+                    command = "more";
+                    break;
                 default:
                     command = "ciao";
             }
@@ -104,7 +78,7 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
             case "pokediy":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.PokeDIY, fromNumber);
                 break;
-            case "altro":
+            case "more":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.More, fromNumber);
                 break;
             default:
