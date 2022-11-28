@@ -102,7 +102,7 @@ class FacebookService {
                         type: "text",
                         text: {
                             preview_url: false,
-                            body: `Ordine accettato 🎉\n\nIl tuo codice di riferimento: ${orderCode}\n\n_In caso di problemi contatta il numero +39 333 789 0510_`,
+                            body: `Ordine accettato 🎉\n\nIl tuo codice di riferimento: *${orderCode}*\n\n_In caso di problemi contatta il numero +39 333 789 0510_`,
                         },
                     }, {
                         headers: {
