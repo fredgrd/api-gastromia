@@ -80,8 +80,10 @@
         "interactive": {
             "type": "button",
             "header": {
-                "type": "text",
-                "text": "Poke Fai-da-te"
+                "type": "image",
+                "image": {
+                    "link": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke-mix.jpg"
+                }
             },
             "body": {
                 "text": "*Size*\nRegular 3.50 €\nLarge 4.50 €\n\n*Base*\nRiso sushi\nRiso basmati\nRiso integrale\nLattuga\n\n*Proteine*\nSalmone 1.00 €\nSalmone cotto 1.00 €\nGamberetti 1.00 €\nPollo teriyaki 1.00 €\nTonno 1.00 €\nTuna tataki 2.00 €\nPollo alla griglia 1.00 €\nSpicy chicken 1.50 €\n\n*Greens*\nEdamame 0.20 €\nVerza viola 0.20 €\nCarote 0.20 €\nCetrioli 0.20 €\nMais 0.20 €\nCeci 0.20 €\nPomodorini 0.20 €\nJalapeño 0.20 €\nBarbabietola 0.20 €\nMango 0.50 €\nSpicy broccoli 0.50 €\nBroccoli 0.50 €\nFagiolini 0.50 €\nGuacamole 0.50 €\nAvocado 0.50 €\nAlga wakame 0.50 €\n\n*Formaggi*\nParmigiano 0.50 €\nFeta 0.50 €\nQueso 0.50 €\nPhiladelphia 0.50 €\n\n*Toppings*\nSemi di sesamo 0.20 €\nMisto semi 0.50 €\nMandorle 0.50 €\nNoci 0.50 €\nOlive 0.20 €\nUva passa 0.50 €\n\n*Dressings*\nSoia 0.50 €\nTeriyaki 0.50 €\nPonzu 0.50 €\nSpicy mayo 0.50 €\nOlio EVO 0.50 €\nMiele e senape 0.50 €\nSalsa alla curcuma 0.50 €\nLime squeeze 0.50 €\nCitronette 0.50 €\nVegan mayo 0.50 €\nWasabi honey soy 0.50 €\n\nPer ordinare scrivi:\nordine [orario] [nome]\nbowl\n-regular\n-riso sushi\n-salmone\n-avocado\n..."
