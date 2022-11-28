@@ -82,7 +82,7 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
         switch (command) {
             case "ordine":
-                yield facebookService.acceptOrder(req.body.entry[0].changes[0].value.messages[0].text.body);
+                yield facebookService.acceptOrder(req.body.entry[0].changes[0].value.messages[0].text.body, fromNumber);
                 break;
             case "poke":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Poke, fromNumber);

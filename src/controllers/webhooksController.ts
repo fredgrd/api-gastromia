@@ -84,7 +84,8 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
     switch (command) {
       case "ordine":
         await facebookService.acceptOrder(
-          req.body.entry[0].changes[0].value.messages[0].text.body
+          req.body.entry[0].changes[0].value.messages[0].text.body,
+          fromNumber
         );
         break;
       case "poke":

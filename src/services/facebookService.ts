@@ -1,5 +1,6 @@
 import axios from "axios";
 import { LoggerService } from "./loggerService";
+import { randomAlphanumeric } from "../helpers/alphanumericGenerator";
 import whatsappPayloads from "../data/whatsapp.json";
 
 export enum WhatsappMessage {
@@ -72,9 +73,9 @@ export class FacebookService {
     }
   }
 
-  async acceptOrder(order: string) {
-    // Add from message
-    console.log("ACCEPT ORDER", this.acceptOrderPhoneNumber, this.apiVersion);
+  async acceptOrder(order: string, from: string) {
+    const orderCode = randomAlphanumeric(4);
+
     try {
       const response = await axios.post(
         `https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`,
@@ -84,9 +85,8 @@ export class FacebookService {
           to: this.acceptOrderPhoneNumber,
           type: "text",
           text: {
-            // the text object
             preview_url: false,
-            body: order,
+            body: `ORDER: ${orderCode}\n\nFROM: ${from}\n\n${order}`,
           },
         },
         {
@@ -95,6 +95,27 @@ export class FacebookService {
           },
         }
       );
+
+      if (response.status === 200) {
+        await axios.post(
+          `https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`,
+          {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: this.acceptOrderPhoneNumber,
+            type: "text",
+            text: {
+              preview_url: false,
+              body: `Ordine accettato 🎉\n\nIl tuo codice di riferimento: ${orderCode}\n\n_In caso di problemi contatta il numero +39 333 789 0510_`,
+            },
+          },
+          {
+            headers: {
+              Authorization: this.token,
+            },
+          }
+        );
+      }
     } catch (error) {
       console.log(error);
     }

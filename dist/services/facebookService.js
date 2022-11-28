@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FacebookService = exports.WhatsappMessage = void 0;
 const axios_1 = __importDefault(require("axios"));
+const alphanumericGenerator_1 = require("../helpers/alphanumericGenerator");
 const whatsapp_json_1 = __importDefault(require("../data/whatsapp.json"));
 var WhatsappMessage;
 (function (WhatsappMessage) {
@@ -75,10 +76,9 @@ class FacebookService {
             }
         });
     }
-    acceptOrder(order) {
+    acceptOrder(order, from) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Add from message
-            console.log("ACCEPT ORDER", this.acceptOrderPhoneNumber, this.apiVersion);
+            const orderCode = (0, alphanumericGenerator_1.randomAlphanumeric)(4);
             try {
                 const response = yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, {
                     messaging_product: "whatsapp",
@@ -86,15 +86,30 @@ class FacebookService {
                     to: this.acceptOrderPhoneNumber,
                     type: "text",
                     text: {
-                        // the text object
                         preview_url: false,
-                        body: order,
+                        body: `ORDER: ${orderCode}\n\nFROM: ${from}\n\n${order}`,
                     },
                 }, {
                     headers: {
                         Authorization: this.token,
                     },
                 });
+                if (response.status === 200) {
+                    yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, {
+                        messaging_product: "whatsapp",
+                        recipient_type: "individual",
+                        to: this.acceptOrderPhoneNumber,
+                        type: "text",
+                        text: {
+                            preview_url: false,
+                            body: `Ordine accettato 🎉\n\nIl tuo codice di riferimento: ${orderCode}\n\n_In caso di problemi contatta il numero +39 333 789 0510_`,
+                        },
+                    }, {
+                        headers: {
+                            Authorization: this.token,
+                        },
+                    });
+                }
             }
             catch (error) {
                 console.log(error);
