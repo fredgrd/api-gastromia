@@ -90,6 +90,17 @@
             },
             "footer": {
                 "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_MENU",
+                            "title": "Menu"
+                        }
+                    }
+                ]
             }
         }
     },

@@ -84,7 +84,7 @@
       "header": {
         "type": "image",
         "image": {
-          "link":"https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke-mix.jpg"
+          "link": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke-mix.jpg"
         }
       },
       "body": {
@@ -92,6 +92,17 @@
       },
       "footer": {
         "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+      },
+      "action": {
+        "buttons": [
+          {
+            "type": "reply",
+            "reply": {
+              "id": "REPLY_BUTTON_MENU",
+              "title": "Menu"
+            }
+          }
+        ]
       }
     }
   },
