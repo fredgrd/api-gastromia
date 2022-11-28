@@ -45,19 +45,12 @@ export const verifyWhatsapp = (req: Request, res: Response) => {
 };
 
 export const handleWhatsappEvents = async (req: Request, res: Response) => {
-  const loggerService = new LoggerService();
+  const loggerService = new LoggerService()
 
   await loggerService.createLog({
-    name: "facebookEvent",
-    body: `Started`,
-  });
-
-  await loggerService.createLog({
-    name: "facebookEvent",
+    name: "[facebookEvent] Incoming request",
     body: JSON.stringify(req.body),
   });
-
-  console.log(JSON.stringify(req.body));
 
   if (
     req.body.entry[0] &&
@@ -67,11 +60,13 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
     req.body.entry[0].changes[0].value &&
     req.body.entry[0].changes[0].value.messages &&
     req.body.entry[0].changes[0].value.messages[0] &&
+    req.body.entry[0].changes[0].value.messages[0].id &&
     (req.body.entry[0].changes[0].value.messages[0].type === "text" ||
       req.body.entry[0].changes[0].value.messages[0].type === "interactive")
   ) {
     const facebookService = new FacebookService();
     const fromNumber = req.body.entry[0].changes[0].value.messages[0].from;
+    const eventId = req.body.entry[0].changes[0].value.messages[0].id
     let command: string = "";
 
     if (req.body.entry[0].changes[0].value.messages[0].type === "text") {
@@ -94,16 +89,11 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         default:
           command = "ciao";
       }
-
-      await loggerService.createLog({
-        name: "facebookEvent - interactive",
-        body: `${fromNumber} ${command} ${replyId}`,
-      });
     }
 
     await loggerService.createLog({
-      name: "facebookEvent",
-      body: `${fromNumber} ${command}`,
+      name: "[facebookEvent] - Command",
+      body: `${eventId} ${fromNumber} ${command}`,
     });
 
     switch (command) {
@@ -113,11 +103,6 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         );
         break;
       case "poke":
-        await loggerService.createLog({
-          name: "facebookEvent - sending poke",
-          body: `${fromNumber} ${command}`,
-        });
-
         await facebookService.sendMessage(WhatsappMessage.Poke, fromNumber);
         break;
       case "pokediy":
@@ -127,10 +112,6 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         await facebookService.sendMessage(WhatsappMessage.More, fromNumber);
         break;
       default:
-        await loggerService.createLog({
-          name: "facebookEvent - sending default",
-          body: `${fromNumber} ${command}`,
-        });
         await facebookService.sendMessage(WhatsappMessage.Intro, fromNumber);
     }
   }

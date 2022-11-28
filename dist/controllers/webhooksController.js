@@ -55,14 +55,9 @@ exports.verifyWhatsapp = verifyWhatsapp;
 const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loggerService = new loggerService_1.LoggerService();
     yield loggerService.createLog({
-        name: "facebookEvent",
-        body: `Started`,
-    });
-    yield loggerService.createLog({
-        name: "facebookEvent",
+        name: "[facebookEvent] Incoming request",
         body: JSON.stringify(req.body),
     });
-    console.log(JSON.stringify(req.body));
     if (req.body.entry[0] &&
         req.body.entry[0].changes &&
         req.body.entry[0].changes[0] &&
@@ -70,10 +65,12 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
         req.body.entry[0].changes[0].value &&
         req.body.entry[0].changes[0].value.messages &&
         req.body.entry[0].changes[0].value.messages[0] &&
+        req.body.entry[0].changes[0].value.messages[0].id &&
         (req.body.entry[0].changes[0].value.messages[0].type === "text" ||
             req.body.entry[0].changes[0].value.messages[0].type === "interactive")) {
         const facebookService = new facebookService_1.FacebookService();
         const fromNumber = req.body.entry[0].changes[0].value.messages[0].from;
+        const eventId = req.body.entry[0].changes[0].value.messages[0].id;
         let command = "";
         if (req.body.entry[0].changes[0].value.messages[0].type === "text") {
             const text = req.body.entry[0].changes[0].value.messages[0].text.body;
@@ -92,24 +89,16 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 default:
                     command = "ciao";
             }
-            yield loggerService.createLog({
-                name: "facebookEvent - interactive",
-                body: `${fromNumber} ${command} ${replyId}`,
-            });
         }
         yield loggerService.createLog({
-            name: "facebookEvent",
-            body: `${fromNumber} ${command}`,
+            name: "[facebookEvent] - Command",
+            body: `${eventId} ${fromNumber} ${command}`,
         });
         switch (command) {
             case "ordine":
                 yield facebookService.acceptOrder(req.body.entry[0].changes[0].value.messages[0].text.body);
                 break;
             case "poke":
-                yield loggerService.createLog({
-                    name: "facebookEvent - sending poke",
-                    body: `${fromNumber} ${command}`,
-                });
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Poke, fromNumber);
                 break;
             case "pokediy":
@@ -119,10 +108,6 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.More, fromNumber);
                 break;
             default:
-                yield loggerService.createLog({
-                    name: "facebookEvent - sending default",
-                    body: `${fromNumber} ${command}`,
-                });
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Intro, fromNumber);
         }
     }
