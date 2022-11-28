@@ -57,6 +57,9 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 case "REPLY_BUTTON_POKE_MAKE_YOUR_OWN":
                     command = "pokediy";
                     break;
+                case "REPLY_BUTTON_BURRITO":
+                    command = "burrito";
+                    break;
                 case "REPLY_BUTTON_MORE":
                     command = "more";
                     break;
@@ -83,6 +86,9 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 break;
             case "pokediy":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.PokeDIY, fromNumber);
+                break;
+            case "burrito":
+                yield facebookService.sendMessage(facebookService_1.WhatsappMessage.Burrito, fromNumber);
                 break;
             case "more":
                 yield facebookService.sendMessage(facebookService_1.WhatsappMessage.More, fromNumber);

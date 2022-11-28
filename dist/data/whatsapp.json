@@ -99,6 +99,51 @@
                             "id": "REPLY_BUTTON_MENU",
                             "title": "Menu"
                         }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_DRINKS",
+                            "title": "Drinks"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "burrito_payload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "image",
+                "image": {
+                    "link": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke-mix.jpg"
+                }
+            },
+            "body": {
+                "text": "Il burrito come lo vuoi te:\n\n🍗 Go-to chicken burrito 6.90 €\n_Spicy chicken, riso bianco, queso, black beans, pico de gallo, sour cream_\n\n🫘 Fai-da-te 6.90 €\n*Step 1. Base*\nSpicy chicken\nBarbacoa +0.50 €\nCarnitas\nGuacamole\n\n*Step 2. Riso*\nRiso bianco\nRiso integrale\nNo riso\n\n*Step 3. Beans*\nBlack beans\nPinto beans\nNo beans\n\n*Step 4. Salsa*\nPico de Gallo 🌶\nTomato Green Chili 🌶🌶\nRed Chili 🌶🌶🌶\n\n*Step 5. Top off*\nFajitas\nSour cream\nGuacamole +1.00 €\nQueso\nLattuga\nMais\n\n*Extras*\nExtra chicken +2.00 €\nExtra barbacoa +2.00 €\nExtra carnitas +2.00 €"
+            },
+            "footer": {
+                "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_MENU",
+                            "title": "Menu"
+                        }
+                    },
+                    {
+                        "type": "reply",
+                        "reply": {
+                            "id": "REPLY_BUTTON_DRINKS",
+                            "title": "Drinks"
+                        }
                     }
                 ]
             }

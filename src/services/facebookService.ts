@@ -7,6 +7,7 @@ export enum WhatsappMessage {
   More,
   Poke,
   PokeDIY,
+  Burrito,
 }
 
 export class FacebookService {
@@ -38,6 +39,9 @@ export class FacebookService {
         break;
       case WhatsappMessage.PokeDIY:
         payload = whatsappPayloads.poke_diy_payload;
+        break;
+      case WhatsappMessage.Burrito:
+        payload = whatsappPayloads.burrito_payload;
         break;
     }
 

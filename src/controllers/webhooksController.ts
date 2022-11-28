@@ -56,6 +56,9 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         case "REPLY_BUTTON_POKE_MAKE_YOUR_OWN":
           command = "pokediy";
           break;
+        case "REPLY_BUTTON_BURRITO":
+          command = "burrito";
+          break;
         case "REPLY_BUTTON_MORE":
           command = "more";
           break;
@@ -86,6 +89,9 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         break;
       case "pokediy":
         await facebookService.sendMessage(WhatsappMessage.PokeDIY, fromNumber);
+        break;
+      case "burrito":
+        await facebookService.sendMessage(WhatsappMessage.Burrito, fromNumber);
         break;
       case "more":
         await facebookService.sendMessage(WhatsappMessage.More, fromNumber);
