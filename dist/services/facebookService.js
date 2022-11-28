@@ -87,7 +87,7 @@ class FacebookService {
                     type: "text",
                     text: {
                         preview_url: false,
-                        body: `ORDER: ${orderCode}\n\nFROM: ${from}\n\n${order}`,
+                        body: `ORDER: *${orderCode}*\n\nFROM: +${from}\n\n${order}`,
                     },
                 }, {
                     headers: {
@@ -98,7 +98,7 @@ class FacebookService {
                     yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, {
                         messaging_product: "whatsapp",
                         recipient_type: "individual",
-                        to: this.acceptOrderPhoneNumber,
+                        to: from,
                         type: "text",
                         text: {
                             preview_url: false,
