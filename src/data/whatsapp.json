@@ -52,7 +52,7 @@
       "header": {
         "type": "image",
         "image": {
-          "link": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke_mix-min.jpg"
+          "link": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/poke_menu_banner.jpg"
         }
       },
       "body": {
@@ -112,14 +112,14 @@
           {
             "type": "reply",
             "reply": {
-              "id": "REPLY_BUTTON_POKE",
+              "id": "REPLY_BUTTON_SALADS",
               "title": "Salads 🍲"
             }
           },
           {
             "type": "reply",
             "reply": {
-              "id": "REPLY_BUTTON_BURRITO",
+              "id": "REPLY_BUTTON_PITA",
               "title": "Pita 🌯"
             }
           }

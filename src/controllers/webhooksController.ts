@@ -59,6 +59,12 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
         case "REPLY_BUTTON_MORE":
           command = "more";
           break;
+        case "REPLY_BUTTON_SALADS":
+          command = "salad";
+          break;
+        case "REPLY_BUTTON_PITA":
+          command = "pita";
+          break;
         default:
           command = "ciao";
       }

@@ -60,6 +60,12 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 case "REPLY_BUTTON_MORE":
                     command = "more";
                     break;
+                case "REPLY_BUTTON_SALADS":
+                    command = "salad";
+                    break;
+                case "REPLY_BUTTON_PITA":
+                    command = "pita";
+                    break;
                 default:
                     command = "ciao";
             }
