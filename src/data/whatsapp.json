@@ -172,14 +172,14 @@
             "type": "reply",
             "reply": {
               "id": "REPLY_BUTTON_SALADS",
-              "title": "Salads 🍲"
+              "title": "Salads 🥗"
             }
           },
           {
             "type": "reply",
             "reply": {
               "id": "REPLY_BUTTON_PITA",
-              "title": "Pita 🌯"
+              "title": "Pita 🫔"
             }
           }
         ]
@@ -201,6 +201,45 @@
       },
       "body": {
         "text": "Ecco le nostre insalate:\n\nNorvegese\n7.50 €\n_Spinacino, salmone (sous vide), fagiolini, avocado, feta, pomodorini, misto semi, vinaigrette miele e senape_\n\nTuna Pop\n8.00 €\n_Lattuga, tuna tataki, mango, edamame, avocado, pomodorini, wasabi honey soy dressing_\n\nLa La Land 🌱\n7.00 €\n_Lattuga, avocado, funghi, olive, broccoli, verza viola, noci, pomodorini, salsa alla curcuma_\n\nCabrita\n7.00 €\n_Spinacino, pollo alla griglia, quinoa, pomodorini, caprino, carote, tortilla chips, citronette_"
+      },
+      "footer": {
+        "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"
+      },
+      "action": {
+        "buttons": [
+          {
+            "type": "reply",
+            "reply": {
+              "id": "REPLY_BUTTON_MENU",
+              "title": "Menu"
+            }
+          },
+          {
+            "type": "reply",
+            "reply": {
+              "id": "REPLY_BUTTON_DRINKS",
+              "title": "Drinks"
+            }
+          }
+        ]
+      }
+    }
+  },
+
+  "pita_payload": {
+    "messaging_product": "whatsapp",
+    "recipient_type": "individual",
+    "type": "interactive",
+    "interactive": {
+      "type": "button",
+      "header": {
+        "type": "image",
+        "image": {
+          "link": "https://dzfokbljn6tmk.cloudfront.net/whatsapp-assets/pita-banner.jpg"
+        }
+      },
+      "body": {
+        "text": "Ecco le nostre pita:\nTutte a 5.50 €\n\nGyros\n_Pita, maiale, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_\n\nLoukaniko\n_Pita, salsiccia rustica greca, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_\n\nChicken\n_Pita, pollo, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_\n\nVeggie\n_Pita, feta, olive greche, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_"
       },
       "footer": {
         "text": "Per ordinare scrivi: ordine [orario] [nome] [piatti]"

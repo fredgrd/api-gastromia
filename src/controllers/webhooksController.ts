@@ -99,6 +99,9 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
       case "salad":
         await facebookService.sendMessage(WhatsappMessage.Salad, fromNumber);
         break;
+      case "pita":
+        await facebookService.sendMessage(WhatsappMessage.Pita, fromNumber);
+        break;
       default:
         await facebookService.sendMessage(WhatsappMessage.Intro, fromNumber);
     }
