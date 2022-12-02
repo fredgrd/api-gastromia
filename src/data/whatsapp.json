@@ -13,7 +13,7 @@
         "text": "Ecco cosa c'è nel menù di oggi:\n\n🥙 Poke \n🥗 Salads \n🫔 Pita\n🌯 Burrito\n\nClicca sui bottoni quì sotto per scoprire i nostri piatti 👇"
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
@@ -59,7 +59,7 @@
         "text": "Ecco i nostri poke:\n\nSalmon Basic 🐟\nRegular 6.00 € / Large 7.00 €\n_Riso sushi, salmone, avocado, pomodorini, edamame, verza viola, semi di sesamo, salsa ponzu lime_\n\nTuna Picante 🌶\nRegular 6.50 € / Large 7.50 €\n_Riso basmati, tonno, jalapeño, alga wakame, mandorle tostate, avocado, zenzero marinato, spicy mayo_\n\nVegan Queen 🌱\nRegular 6.00 € / Large 7.00 €\n_Quinoa, ceci, pomodorini, spinacino, patate dolci al forno, noci, guacamole, citronette_\n\nShrimp Pimp 🦐\nRegular 6.50 € / Large 7.50 €\n_Riso sushi, gamber alla griglia, lime squeeze, barbabietola, cetriolo, mango, edamame, salsa teriyaki_"
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
@@ -91,7 +91,7 @@
         "text": "*Size*\nRegular 3.50 €\nLarge 4.50 €\n\n*Base*\nRiso sushi\nRiso basmati\nRiso integrale\nLattuga\n\n*Proteine*\nSalmone 1.00 €\nSalmone cotto 1.00 €\nGamberetti 1.00 €\nPollo teriyaki 1.00 €\nTonno 1.00 €\nTuna tataki 2.00 €\nPollo alla griglia 1.00 €\nSpicy chicken 1.50 €\n\n*Greens*\nEdamame 0.20 €\nVerza viola 0.20 €\nCarote 0.20 €\nCetrioli 0.20 €\nMais 0.20 €\nCeci 0.20 €\nPomodorini 0.20 €\nJalapeño 0.20 €\nBarbabietola 0.20 €\nMango 0.50 €\nSpicy broccoli 0.50 €\nBroccoli 0.50 €\nFagiolini 0.50 €\nGuacamole 0.50 €\nAvocado 0.50 €\nAlga wakame 0.50 €\n\n*Formaggi*\nParmigiano 0.50 €\nFeta 0.50 €\nQueso 0.50 €\nPhiladelphia 0.50 €\n\n*Toppings*\nSemi di sesamo 0.20 €\nMisto semi 0.50 €\nMandorle 0.50 €\nNoci 0.50 €\nOlive 0.20 €\nUva passa 0.50 €\n\n*Dressings*\nSoia 0.50 €\nTeriyaki 0.50 €\nPonzu 0.50 €\nSpicy mayo 0.50 €\nOlio EVO 0.50 €\nMiele e senape 0.50 €\nSalsa alla curcuma 0.50 €\nLime squeeze 0.50 €\nCitronette 0.50 €\nVegan mayo 0.50 €\nWasabi honey soy 0.50 €\n\nPer ordinare scrivi:\nordine [orario] [nome]\nbowl\n-regular\n-riso sushi\n-salmone\n-avocado\n..."
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
@@ -130,7 +130,7 @@
         "text": "Il burrito come lo vuoi te:\n\n🍗 Go-to chicken burrito 6.90 €\n_Spicy chicken, riso bianco, queso, black beans, pico de gallo, sour cream_\n\n🫘 Fai-da-te 6.90 €\n*Step 1. Base*\nSpicy chicken\nBarbacoa +0.50 €\nCarnitas\nGuacamole\n\n*Step 2. Riso*\nRiso bianco\nRiso integrale\nNo riso\n\n*Step 3. Beans*\nBlack beans\nPinto beans\nNo beans\n\n*Step 4. Salsa*\nPico de Gallo 🌶\nTomato Green Chili 🌶🌶\nRed Chili 🌶🌶🌶\n\n*Step 5. Top off*\nFajitas\nSour cream\nGuacamole +1.00 €\nQueso\nLattuga\nMais\n\n*Extras*\nExtra chicken +2.00 €\nExtra barbacoa +2.00 €\nExtra carnitas +2.00 €\n\nPer ordinare scrivi:\nordine [orario] [nome]\nburrito\n-spicy chicken\n-riso bianco\n-fagioli\n..."
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
@@ -210,7 +210,7 @@
         "text": "Ecco le nostre insalate:\n\nNorvegese\n7.50 €\n_Spinacino, salmone (sous vide), fagiolini, avocado, feta, pomodorini, misto semi, vinaigrette miele e senape_\n\nTuna Pop\n8.00 €\n_Lattuga, tuna tataki, mango, edamame, avocado, pomodorini, wasabi honey soy dressing_\n\nLa La Land 🌱\n7.00 €\n_Lattuga, avocado, funghi, olive, broccoli, verza viola, noci, pomodorini, salsa alla curcuma_\n\nCabrita\n7.00 €\n_Spinacino, pollo alla griglia, quinoa, pomodorini, caprino, carote, tortilla chips, citronette_"
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
@@ -249,7 +249,7 @@
         "text": "Ecco le nostre pita:\nTutte a 5.50 €\n\nGyros\n_Pita, maiale, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_\n\nLoukaniko\n_Pita, salsiccia rustica greca, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_\n\nChicken\n_Pita, pollo, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_\n\nVeggie\n_Pita, feta, olive greche, tzatziki, lattuga, pomodoro, cipolla, patatine fritte_"
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
@@ -286,7 +286,7 @@
         "text": "Estratto Mela Zenzero 2.50 €\nEstratto Mela Bergamotto 2.50 €\nEstratto Mela Mirtillo 2.50 €\n\nAcqua S. Benedetto Naturale 1.00 €\nAcqua Nepi 1.00 €\nAcqua S. Pellegrino 1.00 €\n\nCoca-Cola 1.50 €\nCoca-Cola Zero 1.50 €\n\nLurisia Gazzosa 2.00 €\nLurisia Chinotto 2.00 €\n\nEstathé pesca 2.00 €\nEstathé limone 2.00 €\n\nRedBull 2.50 €"
       },
       "footer": {
-        "text": "_Per ordinare scrivi:_\nordine [orario] [nome]\n[piatti]"
+        "text": "_Per ordinare scrivi:_\n*ordine* orario nome\npiatti"
       },
       "action": {
         "buttons": [
