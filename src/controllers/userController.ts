@@ -5,24 +5,15 @@ export const fetchUser = async (req: Request, res: Response) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   const userService = new UserService();
 
-  console.log("REQUEST RECEIVED", token);
-
   if (!token) {
     res.sendStatus(400);
     return;
   }
 
-  console.log("About to verify token");
-
   // Verify token
   const userNumber = userService.verifyToken(token || "");
-
-  console.log("UserNumber", userNumber);
-
   const foundUser = await userService.fetchUser(userNumber || "");
 
-  console.log("UserNumber", userNumber);
-  console.log("FoundUser", foundUser);
 
   if (foundUser) {
     res.status(200).json(foundUser);

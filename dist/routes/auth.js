@@ -7,3 +7,7 @@ const router = (0, express_1.Router)();
 exports.authRouter = router;
 router.post("/start", authController_1.startVerification);
 router.post("/checkcode/", authController_1.checkVerification);
+router.get("/cookie", (req, res) => {
+    res.cookie("token", "ciao", { httpOnly: true });
+    res.send("Cookie sent");
+});

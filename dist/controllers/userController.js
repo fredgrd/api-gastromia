@@ -15,18 +15,13 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
     const userService = new userService_1.UserService();
-    console.log("REQUEST RECEIVED", token);
     if (!token) {
         res.sendStatus(400);
         return;
     }
-    console.log("About to verify token");
     // Verify token
     const userNumber = userService.verifyToken(token || "");
-    console.log("UserNumber", userNumber);
     const foundUser = yield userService.fetchUser(userNumber || "");
-    console.log("UserNumber", userNumber);
-    console.log("FoundUser", foundUser);
     if (foundUser) {
         res.status(200).json(foundUser);
     }
