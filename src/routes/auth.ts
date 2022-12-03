@@ -18,6 +18,8 @@ router.get("/cookie", (req, res) => {
 router.get("/readcookie", (req, res) => {
   const token = req.cookies.token;
 
+  console.log("ALL COOKIES", req.cookies);
+
   console.log("COOKIE", token);
   res.sendStatus(200);
 });
