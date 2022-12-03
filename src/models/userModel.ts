@@ -6,7 +6,6 @@ export interface IUser {
 }
 
 export interface UserDoc extends mongoose.Document {
-  id: string
   number: string;
   name: string;
   createdAt: Date;
