@@ -19,6 +19,7 @@ router.get("/readcookie", (req, res) => {
   const token = req.cookies.token;
 
   console.log("COOKIE", token);
+  res.sendStatus(200);
 });
 
 export { router as authRouter };
