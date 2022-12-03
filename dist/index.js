@@ -16,7 +16,7 @@ const port = process.env.PORT || 8000;
 (0, database_1.connectDatabase)();
 // Middlewares
 /// Cors
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = ["http://localhost:3000", "http://192.168.1.9:3000"];
 const options = {
     origin: allowedOrigins,
 };
