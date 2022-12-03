@@ -7,7 +7,7 @@ export const fetchUser = async (req: Request, res: Response) => {
   const userService = new UserService();
   const logger = new LoggerService();
 
-  logger.createLog({
+  await logger.createLog({
     name: "fetchUser - request received",
     body: `With token ${token}`,
   });

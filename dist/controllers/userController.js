@@ -17,7 +17,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
     const userService = new userService_1.UserService();
     const logger = new loggerService_1.LoggerService();
-    logger.createLog({
+    yield logger.createLog({
         name: "fetchUser - request received",
         body: `With token ${token}`,
     });
