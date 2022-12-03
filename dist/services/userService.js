@@ -32,7 +32,7 @@ class UserService {
         }
         catch (error) {
             console.log(`VerifyToken error: ${error}`);
-            return;
+            return null;
         }
     }
     fetchUser(number) {

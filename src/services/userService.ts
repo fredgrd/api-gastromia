@@ -16,13 +16,13 @@ export class UserService {
     return token;
   }
 
-  verifyToken(token: string): string | undefined {
+  verifyToken(token: string): string | null {
     try {
       const decoded = jwt.verify(token, this.jwtSecret);
       return (decoded as JwtPayload).number;
     } catch (error) {
       console.log(`VerifyToken error: ${error}`);
-      return;
+      return null;
     }
   }
 

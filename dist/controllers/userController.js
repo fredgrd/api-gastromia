@@ -24,6 +24,8 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Verify token
     const userNumber = userService.verifyToken(token || "");
     const foundUser = yield userService.fetchUser(userNumber || "");
+    console.log("UserNumber", userNumber);
+    console.log("FoundUser", foundUser);
     if (foundUser) {
         res.status(200).json(foundUser);
     }
