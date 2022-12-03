@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const database_1 = require("./database");
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
@@ -14,6 +15,13 @@ const port = process.env.PORT || 8000;
 // Connect to database
 (0, database_1.connectDatabase)();
 // Middlewares
+/// Cors
+const allowedOrigins = ["http://localhost:3000"];
+const options = {
+    origin: allowedOrigins,
+};
+app.use((0, cors_1.default)(options));
+/// Json
 app.use(express_1.default.json());
 // Auth routes
 app.use("/auth", auth_1.authRouter);

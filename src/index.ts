@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+import cors from "cors";
 import { connectDatabase } from "./database";
 import dotenv from "dotenv";
 
@@ -15,6 +16,16 @@ const port = process.env.PORT || 8000;
 connectDatabase();
 
 // Middlewares
+/// Cors
+const allowedOrigins = ["http://localhost:3000"];
+
+const options: cors.CorsOptions = {
+  origin: allowedOrigins,
+};
+
+app.use(cors(options));
+
+/// Json
 app.use(express.json());
 
 // Auth routes
