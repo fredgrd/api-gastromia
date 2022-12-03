@@ -13,7 +13,7 @@ router.post("/checkcode/", checkVerification);
 router.get("/cookie", (req, res) => {
   res.cookie("token", "ciao", {
     httpOnly: true,
-    secure: true,
+    // secure: true,
   });
   res.send("Cookie sent");
 });
