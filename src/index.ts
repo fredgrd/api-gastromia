@@ -11,7 +11,7 @@ import { webhooksRouter } from "./routes/webhooks";
 // dotenv.config();
 
 const app: Express = express();
-const port = 3001//process.env.PORT || 3001;
+const port = process.env.PORT || 3001;
 
 // Connect to database
 connectDatabase();
@@ -27,7 +27,7 @@ const options: cors.CorsOptions = {
 app.use(cors(options));
 
 /// Cookie parser
-// app.use(cookieparser());
+app.use(cookieparser());
 
 /// Json
 app.use(express.json());

@@ -5,13 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const database_1 = require("./database");
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
 const webhooks_1 = require("./routes/webhooks");
 // dotenv.config();
 const app = (0, express_1.default)();
-const port = 3001; //process.env.PORT || 3001;
+const port = process.env.PORT || 3001;
 // Connect to database
 (0, database_1.connectDatabase)();
 // Middlewares
@@ -22,7 +23,7 @@ const options = {
 };
 app.use((0, cors_1.default)(options));
 /// Cookie parser
-// app.use(cookieparser());
+app.use((0, cookie_parser_1.default)());
 /// Json
 app.use(express_1.default.json());
 // Auth routes
