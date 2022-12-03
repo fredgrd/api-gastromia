@@ -17,7 +17,7 @@ router.get("/cookie", (req, res) => {
     // sameSite: "none",
     // secure: true,
   });
-  res.send("Cookie sent");
+  res.sendStatus(200);
 });
 
 router.get("/readcookie", (req, res) => {
