@@ -9,9 +9,10 @@ router.post("/start", authController_1.startVerification);
 router.post("/checkcode/", authController_1.checkVerification);
 router.get("/cookie", (req, res) => {
     res.cookie("tokenaaa", "ciao", {
-    // httpOnly: true,
-    // sameSite: "none",
-    // secure: true,
+        maxAge: 60 * 60 * 24 * 30 * 1000, // 60s * 60m * 24h * 30d => 30 Days in secods => in milliseconds
+        // httpOnly: true,
+        // sameSite: "none",
+        // secure: true,
     });
     res.send("Cookie sent");
 });
