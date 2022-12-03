@@ -1,21 +1,18 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService";
-import { LoggerService } from "../services/loggerService";
 
 export const fetchUser = async (req: Request, res: Response) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   const userService = new UserService();
-  const logger = new LoggerService();
 
-  await logger.createLog({
-    name: "fetchUser - request received",
-    body: `With token ${token}`,
-  });
+  console.log("REQUEST RECEIVED", token);
 
   if (!token) {
     res.sendStatus(400);
     return;
   }
+
+  console.log("About to verify token");
 
   // Verify token
   const userNumber = userService.verifyToken(token || "");
