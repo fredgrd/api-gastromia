@@ -5,6 +5,8 @@ export const fetchUser = async (req: Request, res: Response) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   const userService = new UserService();
 
+  console.log("Tried to fetch user", token);
+
   if (!token) {
     res.sendStatus(400);
     return;

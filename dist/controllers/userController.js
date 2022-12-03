@@ -15,6 +15,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
     const userService = new userService_1.UserService();
+    console.log("Tried to fetch user", token);
     if (!token) {
         res.sendStatus(400);
         return;
