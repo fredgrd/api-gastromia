@@ -12,18 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggerService = void 0;
 const logModel_1 = require("../models/logModel");
 class LoggerService {
-    constructor() {
-    }
+    constructor() { }
     createLog(attr) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const log = logModel_1.Log.build(attr);
                 yield log.save();
-                console.log("CREATED");
                 return log;
             }
             catch (error) {
-                console.log(`CreateUser error: ${error}`);
+                console.log(`CreateLog Error: ${error}`);
                 return;
             }
         });
