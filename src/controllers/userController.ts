@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService";
+import { LoggerService } from "../services/loggerService";
 
 export const fetchUser = async (req: Request, res: Response) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   const userService = new UserService();
+  const logger = new LoggerService();
 
-  console.log("Tried to fetch user", token);
+  logger.createLog({
+    name: "fetchUser - request received",
+    body: `With token ${token}`,
+  });
 
   if (!token) {
     res.sendStatus(400);

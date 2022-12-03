@@ -11,11 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.fetchUser = void 0;
 const userService_1 = require("../services/userService");
+const loggerService_1 = require("../services/loggerService");
 const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
     const userService = new userService_1.UserService();
-    console.log("Tried to fetch user", token);
+    const logger = new loggerService_1.LoggerService();
+    logger.createLog({
+        name: "fetchUser - request received",
+        body: `With token ${token}`,
+    });
     if (!token) {
         res.sendStatus(400);
         return;
