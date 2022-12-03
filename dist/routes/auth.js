@@ -11,3 +11,7 @@ router.get("/cookie", (req, res) => {
     res.cookie("token", "ciao", { httpOnly: true });
     res.send("Cookie sent");
 });
+router.get("/readcookie", (req, res) => {
+    const token = req.cookies.token;
+    console.log("COOKIE", token);
+});
