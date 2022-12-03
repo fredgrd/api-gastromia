@@ -16,6 +16,9 @@ export const fetchUser = async (req: Request, res: Response) => {
 
   // Verify token
   const userNumber = userService.verifyToken(token || "");
+
+  console.log("UserNumber", userNumber);
+
   const foundUser = await userService.fetchUser(userNumber || "");
 
   console.log("UserNumber", userNumber);
