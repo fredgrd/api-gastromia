@@ -11,7 +11,11 @@ router.post("/start", startVerification);
 router.post("/checkcode/", checkVerification);
 
 router.get("/cookie", (req, res) => {
-  res.cookie("token", "ciao", { httpOnly: true });
+  res.cookie("token", "ciao", {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  });
   res.send("Cookie sent");
 });
 
