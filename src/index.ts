@@ -27,7 +27,7 @@ const options: cors.CorsOptions = {
 app.use(cors(options));
 
 /// Cookie parser
-app.use(cookieparser());
+// app.use(cookieparser());
 
 /// Json
 app.use(express.json());

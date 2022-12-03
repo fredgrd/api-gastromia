@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const database_1 = require("./database");
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
@@ -23,7 +22,7 @@ const options = {
 };
 app.use((0, cors_1.default)(options));
 /// Cookie parser
-app.use((0, cookie_parser_1.default)());
+// app.use(cookieparser());
 /// Json
 app.use(express_1.default.json());
 // Auth routes
