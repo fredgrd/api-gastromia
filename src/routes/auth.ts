@@ -15,7 +15,7 @@ router.get("/cookie", (req, res) => {
     maxAge: 60 * 60 * 24 * 30 * 1000, // 60s * 60m * 24h * 30d => 30 Days in secods => in milliseconds
     httpOnly: true,
     // sameSite: "none",
-    // secure: true,
+    secure: true,
   });
   res.sendStatus(200);
 });

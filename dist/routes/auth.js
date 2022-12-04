@@ -12,7 +12,7 @@ router.get("/cookie", (req, res) => {
         maxAge: 60 * 60 * 24 * 30 * 1000,
         httpOnly: true,
         // sameSite: "none",
-        // secure: true,
+        secure: true,
     });
     res.sendStatus(200);
 });
