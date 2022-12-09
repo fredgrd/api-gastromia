@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.fetchUser = void 0;
 const userService_1 = require("../services/userService");
 const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
+    console.log("Call", Date.now());
+    const token = req.cookies.token;
     const userService = new userService_1.UserService();
+    console.log("HAS TOKEN?", token);
     if (!token) {
         res.sendStatus(400);
         return;
@@ -23,7 +24,17 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userNumber = userService.verifyToken(token || "");
     const foundUser = yield userService.fetchUser(userNumber || "");
     if (foundUser) {
-        res.status(200).json(foundUser);
+        const token = userService.signToken(userNumber !== null && userNumber !== void 0 ? userNumber : "");
+        res.cookie("token", token, {
+            maxAge: 60 * 60 * 24 * 10 * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.status(200).json({
+            id: foundUser._id,
+            name: foundUser.name,
+            number: foundUser.number,
+        });
     }
     else {
         console.log(`Could not find users for: ${userNumber}`);
@@ -32,8 +43,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.fetchUser = fetchUser;
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
-    const token = (_b = req.header("Authorization")) === null || _b === void 0 ? void 0 : _b.replace("Bearer ", "");
+    const token = req.cookies.token;
     const name = req.body.name;
     const userService = new userService_1.UserService();
     if (!token) {
@@ -48,7 +58,16 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             number: userNumber,
             name: name,
         });
-        res.status(200).json(newUser);
+        if (newUser) {
+            res.status(200).json({
+                id: newUser._id,
+                name: newUser.name,
+                number: newUser.number,
+            });
+        }
+        else {
+            res.sendStatus(400);
+        }
     }
     else {
         res.sendStatus(400);

@@ -51,7 +51,22 @@ const checkVerification = (req, res) => __awaiter(void 0, void 0, void 0, functi
     switch (codeCheck) {
         case twilioService_1.TwilioService.CreateVerificationCheckStatus.Success:
             const token = userService.signToken(number);
-            res.status(200).json({ token: token });
+            const foundUser = yield userService.fetchUser(number || "");
+            res.cookie("token", token, {
+                maxAge: 60 * 60 * 24 * 10 * 1000,
+                httpOnly: true,
+                secure: true,
+            });
+            if (foundUser) {
+                res.status(200).json({
+                    id: foundUser._id,
+                    name: foundUser.name,
+                    number: foundUser.number,
+                });
+            }
+            else {
+                res.status(200).json();
+            }
             break;
         case twilioService_1.TwilioService.CreateVerificationCheckStatus.Failed:
         case twilioService_1.TwilioService.CreateVerificationCheckStatus.CheckError:

@@ -7,10 +7,11 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const database_1 = require("./database");
+const dotenv_1 = __importDefault(require("dotenv"));
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
 const webhooks_1 = require("./routes/webhooks");
-// dotenv.config();
+dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3001;
 // Connect to database

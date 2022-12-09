@@ -6,19 +6,4 @@ const authController_1 = require("../controllers/authController");
 const router = (0, express_1.Router)();
 exports.authRouter = router;
 router.post("/start", authController_1.startVerification);
-router.post("/checkcode/", authController_1.checkVerification);
-router.get("/cookie", (req, res) => {
-    res.cookie("tokenaaa", "ciao", {
-        maxAge: 60 * 60 * 24 * 30 * 1000,
-        httpOnly: true,
-        // sameSite: "none",
-        secure: true,
-    });
-    res.sendStatus(200);
-});
-router.get("/readcookie", (req, res) => {
-    const token = req.cookies.token;
-    console.log("ALL COOKIES", req.cookies);
-    console.log("COOKIE", token);
-    res.sendStatus(200);
-});
+router.post("/checkcode", authController_1.checkVerification);

@@ -8,7 +8,7 @@ import { authRouter } from "./routes/auth";
 import { userRouter } from "./routes/user";
 import { webhooksRouter } from "./routes/webhooks";
 
-// dotenv.config();
+dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
