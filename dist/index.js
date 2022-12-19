@@ -11,6 +11,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
 const webhooks_1 = require("./routes/webhooks");
+const items_1 = require("./routes/items");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3001;
@@ -36,6 +37,8 @@ app.use(express_1.default.json());
 app.use("/auth", auth_1.authRouter);
 // User routes
 app.use("/user", user_1.userRouter);
+// Items routes
+app.use("/items", items_1.itemsRouter);
 // Whatsapp
 app.use("/webhooks", webhooks_1.webhooksRouter);
 app.listen(port, () => {
