@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createItem = void 0;
+exports.buildAddition = exports.buildItem = void 0;
 const itemModel_1 = require("../models/itemModel");
-const createItem = (attr) => __awaiter(void 0, void 0, void 0, function* () {
+const additionModel_1 = require("../models/additionModel");
+const buildItem = (attr) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const item = itemModel_1.Item.build(attr);
         yield item.save();
@@ -22,4 +23,16 @@ const createItem = (attr) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
 });
-exports.createItem = createItem;
+exports.buildItem = buildItem;
+const buildAddition = (attr) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const addition = additionModel_1.Addition.build(attr);
+        yield addition.save();
+        return addition;
+    }
+    catch (error) {
+        console.log(`CreateAddition error: ${error}`);
+        return;
+    }
+});
+exports.buildAddition = buildAddition;

@@ -8,6 +8,7 @@ import { authRouter } from "./routes/auth";
 import { userRouter } from "./routes/user";
 import { webhooksRouter } from "./routes/webhooks";
 import { itemsRouter } from "./routes/items";
+import { cartRouter } from "./routes/cart";
 
 dotenv.config();
 
@@ -46,6 +47,9 @@ app.use("/user", userRouter);
 
 // Items routes
 app.use("/items", itemsRouter);
+
+// Cart routes
+app.use("/cart", cartRouter);
 
 // Whatsapp
 app.use("/webhooks", webhooksRouter);

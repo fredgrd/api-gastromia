@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Item = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+const additionGroupModel_1 = require("./additionGroupModel");
 const itemSchema = new mongoose_1.default.Schema({
     name: {
         type: String,
@@ -38,7 +39,7 @@ const itemSchema = new mongoose_1.default.Schema({
         default: "",
     },
     additions: {
-        type: [String],
+        type: [additionGroupModel_1.AdditionGroupSchema],
         required: true,
         default: [],
     },

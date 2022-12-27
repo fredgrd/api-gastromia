@@ -9,12 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchCategory = exports.searchItems = exports.createItem = void 0;
+exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.createItem = exports.createAddition = void 0;
 const itemModel_1 = require("../models/itemModel");
 const itemService_1 = require("../services/itemService");
+const itemService_2 = require("../services/itemService");
+const createAddition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const addition = req.body.addition;
+    const newAddition = yield (0, itemService_2.buildAddition)(addition);
+    if (newAddition) {
+        res.sendStatus(200);
+    }
+    else {
+        res.sendStatus(500);
+    }
+});
+exports.createAddition = createAddition;
 const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const item = req.body.item;
-    const newItem = yield (0, itemService_1.createItem)(item);
+    const newItem = yield (0, itemService_1.buildItem)(item);
     if (newItem) {
         res.sendStatus(200);
     }
@@ -61,19 +73,9 @@ const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.searchItems = searchItems;
 const fetchCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const category = req.query.c;
-    console.log(category);
+    const cQuery = req.query.c;
     try {
-        const items = yield itemModel_1.Item.aggregate()
-            .match({
-            category: category,
-        })
-            .addFields({
-            id: "$_id",
-        })
-            .project({
-            _id: 0,
-        });
+        const items = yield itemModel_1.Item.find({ category: { $eq: cQuery } });
         res.status(200).json(items);
     }
     catch (error) {
@@ -81,3 +83,24 @@ const fetchCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.fetchCategory = fetchCategory;
+const fetchItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const iQuery = req.query.i;
+    console.log("Querying item", iQuery);
+    if (typeof iQuery !== "string") {
+        res.sendStatus(400);
+        return;
+    }
+    try {
+        const item = yield itemModel_1.Item.findById(iQuery).populate("additions.additions");
+        if (item) {
+            res.status(200).json(item);
+        }
+        else {
+            res.sendStatus(400);
+        }
+    }
+    catch (error) {
+        res.sendStatus(400);
+    }
+});
+exports.fetchItem = fetchItem;

@@ -6,5 +6,7 @@ const itemsController_1 = require("../controllers/itemsController");
 const router = (0, express_1.Router)();
 exports.itemsRouter = router;
 router.post("/create", itemsController_1.createItem);
+router.post("/createaddition", itemsController_1.createAddition);
 router.get("/search", itemsController_1.searchItems);
 router.get("/category", itemsController_1.fetchCategory);
+router.get("/item", itemsController_1.fetchItem);

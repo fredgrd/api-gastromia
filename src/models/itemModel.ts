@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { AdditionGroupSchema, IAdditionGroup } from "./additionGroupModel";
 
 export interface IItem {
   name: string;
@@ -8,7 +9,7 @@ export interface IItem {
   discount: boolean;
   discount_price: number;
   discount_label: string;
-  additions: [];
+  additions: [IAdditionGroup];
   tags: [string];
   category: string;
   media_url: string;
@@ -23,7 +24,7 @@ export interface ItemDoc extends mongoose.Document {
   discount: boolean;
   discount_price: number;
   discount_label: string;
-  additions: [];
+  additions: [IAdditionGroup];
   tags: [string];
   category: string;
   media_url: string;
@@ -67,7 +68,7 @@ const itemSchema = new mongoose.Schema({
     default: "",
   },
   additions: {
-    type: [String],
+    type: [AdditionGroupSchema],
     required: true,
     default: [],
   },
