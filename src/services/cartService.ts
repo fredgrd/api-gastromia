@@ -1,5 +1,5 @@
 import mongoose, { MongooseError } from "mongoose";
-import { cartItemsEquality, ICartItem } from "../models/cartItemModel";
+import { cartItemsEquality, ICartAttribute, ICartItem } from "../models/cartItemModel";
 import { Cart, ICart, CartDoc } from "../models/cartModel";
 import { Item } from "../models/itemModel";
 import { MongooseBasicOperationResult } from "../models/mongooseOperationModels";
@@ -19,6 +19,12 @@ export const buildCart = async (attr: ICart): Promise<BuildCartResult> => {
     return { success: false, error: mongooseError, cart: undefined };
   }
 };
+
+export const validateItemAddition = async (item_id: string, attributes: ICartAttribute[]) => {
+  try {
+    const item = await Item.findOne({id:item_id, available: true}).populate("attribute_groups.attributes").orFail()
+  }
+}
 
 export const validateCartUpdate = async (
   cartItem: ICartItem

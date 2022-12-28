@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchCart = exports.validateCartUpdate = exports.buildCart = void 0;
+exports.patchCart = exports.validateCartUpdate = exports.validateItemAddition = exports.buildCart = void 0;
 const cartItemModel_1 = require("../models/cartItemModel");
 const cartModel_1 = require("../models/cartModel");
 const itemModel_1 = require("../models/itemModel");
@@ -25,6 +25,14 @@ const buildCart = (attr) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.buildCart = buildCart;
+const validateItemAddition = (item_id, attributes) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const item = yield itemModel_1.Item.findOne({ id: item_id, available: true }).populate("attribute_groups.attributes").orFail();
+    }
+    finally {
+    }
+});
+exports.validateItemAddition = validateItemAddition;
 const validateCartUpdate = (cartItem) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const item = yield itemModel_1.Item.findById(cartItem.item).orFail();

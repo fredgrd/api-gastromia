@@ -2,9 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.itemsRouter = void 0;
 const express_1 = require("express");
+const attributesController_1 = require("../controllers/attributesController");
 const itemsController_1 = require("../controllers/itemsController");
 const router = (0, express_1.Router)();
 exports.itemsRouter = router;
+router.post("/attribute/create", attributesController_1.createItemAttribute);
+router.patch("/attribute/update", attributesController_1.updateItemAttribute);
+router.post("/item/create", itemsController_1.createItem);
 router.post("/create", itemsController_1.createItem);
 router.post("/createaddition", itemsController_1.createAddition);
 router.get("/search", itemsController_1.searchItems);

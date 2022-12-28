@@ -1,20 +1,40 @@
-import mongoose from "mongoose";
-import { CartAdditionSchema, ICartAddition } from "./cartAdditionsModel";
+import { Schema, Types } from "mongoose";
 
-export interface ICartItem {
-  item: string;
-  additions: ICartAddition[];
+export interface ICartAttribute {
+  group_id: string; // ID needed for validation
+  attribute: Types.ObjectId; // Will be populated when computing cart / item total
   quantity: number;
 }
 
-export const CartItemSchema = new mongoose.Schema({
-  item: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Item",
-    required: true,
+export const CartAttributeSchema = new Schema<ICartAttribute>(
+  {
+    group_id: {
+      type: String,
+      required: true,
+    },
+    attribute: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
   },
-  additions: {
-    type: [CartAdditionSchema],
+  { _id: false }
+);
+
+export interface ICartItem {
+  item: Types.ObjectId; // Will be populated when computing the cart total
+  attributes: ICartAttribute[];
+  quantity: number;
+}
+
+export const CartItemSchema = new Schema<ICartItem>({
+  item: { type: Schema.Types.ObjectId, required: true },
+  attributes: {
+    type: [CartAttributeSchema],
     required: true,
     default: [],
   },
@@ -24,23 +44,3 @@ export const CartItemSchema = new mongoose.Schema({
     default: 1,
   },
 });
-
-export const cartItemsEquality = (a: ICartItem, b: ICartItem): boolean => {
-  if (a.item.toString() !== b.item.toString()) {
-    return false;
-  }
-
-  if (a.additions.length !== b.additions.length) {
-    return false;
-  }
-
-  const uniqueIdentifiers = a.additions
-    .concat(b.additions)
-    .map(
-      (el) =>
-        `${el.group_id.toString()}${el.addition_id.toString()}${el.quantity}`
-    );
-  const occurences = [...new Set(uniqueIdentifiers)];
-
-  return occurences.length === a.additions.length;
-};

@@ -1,12 +1,16 @@
 import { Request, Response } from "express";
+import { MongooseError, HydratedDocument } from "mongoose";
 import { ICartItem } from "../models/cartItemModel";
 import {
   buildCart,
   patchCart,
   validateCartUpdate,
+  validateItemAddition,
 } from "../services/cartService";
-import { Cart, cleanCart } from "../models/cartModel";
+import { Cart, cleanCart, ICart } from "../models/cartModel";
 import CartService from "../services/crtService";
+
+import { ICartOperation } from "../models/cartOperations";
 
 export const createCart = async (req: Request, res: Response) => {
   const owner_id = req.body.owner_id;
@@ -24,48 +28,74 @@ export const createCart = async (req: Request, res: Response) => {
   }
 };
 
+const isOperation = (operation: any) => {
+  const unsafeCast = operation as ICartOperation;
+
+  return (
+    unsafeCast.type !== undefined &&
+    unsafeCast.quantity !== undefined &&
+    (unsafeCast.cart_item_id !== undefined || unsafeCast.item_id !== undefined)
+  );
+};
+
 export const updateCart = async (req: Request, res: Response) => {
-  const owner_id = req.body.owner_id;
-  const item: ICartItem = req.body.item;
+  // Retrieve user id from token
+  const operation = req.body;
 
-  if (owner_id && item && item.item && item.additions && item.quantity) {
-    const canUpdate = await validateCartUpdate(item);
-
-    if (!canUpdate) {
-      res.sendStatus(400);
-      return;
-    }
-
-    // Get cart
-    const result = await patchCart(owner_id, item);
-    if (result.success && result.cart !== undefined) {
-      res.status(200).json(cleanCart(result.cart));
-      return;
-    } else if (result.error?.name === "DocumentNotFoundError") {
-      // Could not find a cart document for the user
-      const buildResult = await buildCart({
-        owner_id: owner_id,
-        items: [item],
-        updatedAt: Date.now(),
-      });
-
-      if (buildResult.success) {
-        res.sendStatus(200);
-        return;
-      }
-    }
-
-    res.sendStatus(500);
-  } else {
+  if (!operation || !isOperation(operation)) {
+    console.log("UpdateCart error: OperationBadlyFormatted");
     res.sendStatus(400);
+    return
   }
+
+  // Retrieve the user's cart or create a new one
+  let cart: HydratedDocument<ICart> | null;
+  try {
+    cart = await Cart.findOne({ owner_id: "mao" });
+
+    if (!cart) {
+      // Create a cart for the user
+      cart = new Cart({ owner_id: "mao", items: [] });
+      await cart.save();
+    }
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(`UpdateCart error: ${mongooseError.name}`);
+    res.sendStatus(500);
+  }
+
+  if (operation.type)
+    await validateItemAddition(
+      operation.item_id || "",
+      operation.attributes || []
+    );
 };
 
 export const update = async (req: Request, res: Response) => {
-  const cartService = new CartService();
-  const items: ICartItem[] = req.body.items;
+  const { owner_id, operation } = req.body;
 
-  await cartService.safeValidate(items);
+  if (!owner_id) {
+    console.log("UpdateCart error: NoOwnerProvided");
+    res.sendStatus(400);
+    return;
+  }
+
+  if (!operation) {
+    console.log("UpdateCart error: NoOperationProvided");
+    res.sendStatus(400);
+    return;
+  } else if (operation.type === "add") {
+  }
+
+  // Fetch the cart
+  // try {
+  //   const cart = await Cart.findOne({ owner_id: owner_id }).orFail();
+
+  // } catch (error) {
+  //   const mongooseError = error as MongooseError;
+  //   console.log(`UpdateCart error: ${mongooseError.name}`);
+  //   res.sendStatus(500);
+  // }
 };
 
 // export const fetchCart = async (

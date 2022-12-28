@@ -1,5 +1,9 @@
 import { Router } from "express";
 import {
+  createItemAttribute,
+  updateItemAttribute,
+} from "../controllers/attributesController";
+import {
   createItem,
   createAddition,
   searchItems,
@@ -8,6 +12,12 @@ import {
 } from "../controllers/itemsController";
 
 const router = Router();
+
+router.post("/attribute/create", createItemAttribute);
+
+router.patch("/attribute/update", updateItemAttribute);
+
+router.post("/item/create", createItem);
 
 router.post("/create", createItem);
 

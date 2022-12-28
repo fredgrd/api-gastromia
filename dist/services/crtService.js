@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const itemModel_1 = require("../models/itemModel");
+const sf_1 = require("../models/sf");
 class CartService {
     constructor() {
         this.fetchedItems = [];
@@ -21,7 +21,7 @@ class CartService {
     safeValidate(cartItems) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const items = yield itemModel_1.Item.find({
+                const items = yield sf_1.Item.find({
                     _id: { $in: cartItems.map((e) => new mongoose_1.default.Types.ObjectId(e.item)) },
                     available: true,
                 })

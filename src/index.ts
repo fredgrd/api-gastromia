@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import cors from "cors";
 import cookieparser from "cookie-parser";
 import { connectDatabase } from "./database";
