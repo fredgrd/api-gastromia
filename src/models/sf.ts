@@ -1,26 +1,41 @@
-import { Schema, Types, model } from "mongoose";
-import {
-  IItemAttributeGroup,
-  ItemAttributeGroupSchema,
-} from "./itemAttributeModel";
+import mongoose from "mongoose";
+import { AdditionGroupSchema, IAdditionGroup } from "./additionGroupModel";
 
 export interface IItem {
   name: string;
   description: string;
   available: boolean;
-  quick_add: boolean;
   price: number;
   discount: boolean;
   discount_price: number;
   discount_label: string;
-  attribute_groups: IItemAttributeGroup[];
-  tags: string[];
+  additions: [IAdditionGroup];
+  tags: [string];
   category: string;
   media_url: string;
   preview_url: string;
 }
 
-const ItemSchema = new Schema<IItem>({
+export interface ItemDoc extends mongoose.Document {
+  name: string;
+  description: string;
+  available: boolean;
+  price: number;
+  discount: boolean;
+  discount_price: number;
+  discount_label: string;
+  additions: [IAdditionGroup];
+  tags: [string];
+  category: string;
+  media_url: string;
+  preview_url: string;
+}
+
+interface ItemModelInterface extends mongoose.Model<ItemDoc> {
+  build(attr: IItem): ItemDoc;
+}
+
+const itemSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -33,11 +48,6 @@ const ItemSchema = new Schema<IItem>({
     type: Boolean,
     required: true,
     default: true,
-  },
-  quick_add: {
-    type: Boolean,
-    required: true,
-    default: false,
   },
   price: {
     type: Number,
@@ -57,8 +67,8 @@ const ItemSchema = new Schema<IItem>({
     required: true,
     default: "",
   },
-  attribute_groups: {
-    type: [ItemAttributeGroupSchema],
+  additions: {
+    type: [AdditionGroupSchema],
     required: true,
     default: [],
   },
@@ -84,4 +94,11 @@ const ItemSchema = new Schema<IItem>({
   },
 });
 
-export const Item = model<IItem>("Item", ItemSchema);
+itemSchema.statics.build = (attr: IItem) => {
+  return new Item(attr);
+};
+
+// export const Item = mongoose.model<ItemDoc, ItemModelInterface>(
+//   "Item",
+//   itemSchema
+// );

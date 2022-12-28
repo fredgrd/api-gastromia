@@ -1,4 +1,4 @@
-import { Item, IItem, ItemDoc } from "../models/itemModel";
+import { Item, IItem, ItemDoc } from "../models/sf";
 import { Addition, IAddition, AdditionDoc } from "../models/additionModel";
 
 export const buildItem = async (attr: IItem): Promise<ItemDoc | undefined> => {

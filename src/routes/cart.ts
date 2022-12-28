@@ -5,6 +5,6 @@ const router = Router();
 
 router.post("/create", createCart);
 
-router.patch("/update", update);
+router.patch("/update", updateCart);
 
 export { router as cartRouter };

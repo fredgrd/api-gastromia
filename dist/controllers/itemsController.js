@@ -8,14 +8,68 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.createItem = exports.createAddition = void 0;
+exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.createAddition = exports.createItem = void 0;
 const itemModel_1 = require("../models/itemModel");
+const databaseService_1 = __importDefault(require("../services/databaseService"));
 const itemService_1 = require("../services/itemService");
-const itemService_2 = require("../services/itemService");
+// --------------------------------------------------------------------------
+// Item
+// Checks if the object provided is an Item
+/// Update the length check of the object keys w/ latest value
+const isItem = (item) => {
+    const unsafeCast = item;
+    return (unsafeCast.name !== undefined &&
+        unsafeCast.description !== undefined &&
+        unsafeCast.available !== undefined &&
+        unsafeCast.available !== undefined &&
+        unsafeCast.quick_add !== undefined &&
+        unsafeCast.price !== undefined &&
+        unsafeCast.discount !== undefined &&
+        unsafeCast.discount_price !== undefined &&
+        unsafeCast.discount_label !== undefined &&
+        unsafeCast.attribute_groups !== undefined &&
+        unsafeCast.tags !== undefined &&
+        unsafeCast.category !== undefined &&
+        unsafeCast.media_url !== undefined &&
+        unsafeCast.preview_url !== undefined &&
+        Object.keys(unsafeCast).length === 13);
+};
+// Create an Item Document
+/// If the object provided does not conform to the Item interface fails
+const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token, item } = req.body;
+    const databaseService = new databaseService_1.default();
+    const decodedToken = databaseService.verifyToken(token);
+    if (!decodedToken) {
+        console.log("CreateItem error: OperationTokenNotValid");
+        res.sendStatus(403); // Forbidden
+        return;
+    }
+    if (item && isItem(item)) {
+        try {
+            const newItem = new itemModel_1.Item(Object.assign({}, item));
+            yield newItem.save();
+            res.sendStatus(200);
+        }
+        catch (error) {
+            const mongooseError = error;
+            console.log(`CreateItem error: ${mongooseError.name}`);
+            res.sendStatus(500);
+        }
+    }
+    else {
+        console.log("CreateItem error: NotItem");
+        res.sendStatus(400);
+    }
+});
+exports.createItem = createItem;
 const createAddition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const addition = req.body.addition;
-    const newAddition = yield (0, itemService_2.buildAddition)(addition);
+    const newAddition = yield (0, itemService_1.buildAddition)(addition);
     if (newAddition) {
         res.sendStatus(200);
     }
@@ -24,17 +78,6 @@ const createAddition = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.createAddition = createAddition;
-const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const item = req.body.item;
-    const newItem = yield (0, itemService_1.buildItem)(item);
-    if (newItem) {
-        res.sendStatus(200);
-    }
-    else {
-        res.sendStatus(500);
-    }
-});
-exports.createItem = createItem;
 const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.query.k;
     const searchId = req.query.search_id;

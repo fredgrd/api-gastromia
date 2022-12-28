@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildAddition = exports.buildItem = void 0;
-const itemModel_1 = require("../models/itemModel");
+const sf_1 = require("../models/sf");
 const additionModel_1 = require("../models/additionModel");
 const buildItem = (attr) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const item = itemModel_1.Item.build(attr);
+        const item = sf_1.Item.build(attr);
         yield item.save();
         return item;
     }

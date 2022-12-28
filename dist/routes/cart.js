@@ -6,4 +6,4 @@ const cartController_1 = require("../controllers/cartController");
 const router = (0, express_1.Router)();
 exports.cartRouter = router;
 router.post("/create", cartController_1.createCart);
-router.patch("/update", cartController_1.update);
+router.patch("/update", cartController_1.updateCart);

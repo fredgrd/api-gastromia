@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { Item } from "../models/itemModel";
+import { Item } from "../models/sf";
 import { ICartItem } from "../models/cartItemModel";
-import { ItemDoc } from "../models/itemModel";
+import { ItemDoc } from "../models/sf";
 import { ICartAddition } from "../models/cartAdditionsModel";
 
 class CartService {
@@ -105,7 +105,7 @@ class CartService {
     return true;
   }
 
-  
+
 }
 
 export default CartService;
