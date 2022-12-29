@@ -17,15 +17,6 @@ const databaseService_1 = __importDefault(require("../services/databaseService")
 const itemAttributeModel_1 = require("../models/itemAttributeModel");
 // --------------------------------------------------------------------------
 // ItemAttribute
-// Checks if the object provided is an ItemAttribute
-const isItemAttribute = (attribute) => {
-    const unsafeCast = attribute;
-    return (unsafeCast.media_url !== undefined &&
-        unsafeCast.name !== undefined &&
-        unsafeCast.available !== undefined &&
-        unsafeCast.price !== undefined &&
-        unsafeCast.unique_tag !== undefined);
-};
 // Create an ItemAttribute Document
 /// If the object provided does not conform to the ItemAttribute interface fails
 const createItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -38,7 +29,7 @@ const createItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, func
         res.sendStatus(403); // Forbidden
         return;
     }
-    if (itemAttribute && isItemAttribute(itemAttribute)) {
+    if (itemAttribute && (0, itemAttributeModel_1.isItemAttribute)(itemAttribute)) {
         try {
             const newItemAttribute = new itemAttributeModel_1.ItemAttribute(Object.assign({}, itemAttribute));
             yield newItemAttribute.save();
@@ -56,15 +47,6 @@ const createItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.createItemAttribute = createItemAttribute;
-// Check if the object provided matches at least one of the ItemAttribute props
-const isItemAttributeUpdate = (update) => {
-    const unsafeCast = update;
-    return (unsafeCast.media_url !== undefined ||
-        unsafeCast.name !== undefined ||
-        unsafeCast.available !== undefined ||
-        unsafeCast.price !== undefined ||
-        unsafeCast.unique_tag !== undefined);
-};
 // Update an ItemAttribute Document
 /// If the props object provided do not conform to the ItemAttribute interface fails
 const updateItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,10 +65,10 @@ const updateItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, func
         res.sendStatus(400);
         return;
     }
-    if (update && isItemAttributeUpdate(update)) {
+    if (update) {
         try {
-            let itemAttribute = yield itemAttributeModel_1.ItemAttribute.findById(attributeId).orFail();
-            yield itemAttribute.update(update);
+            const itemAttribute = yield itemAttributeModel_1.ItemAttribute.findOneAndUpdate({ _id: attributeId }, update, { new: true });
+            res.status(200).json(itemAttribute);
             res.sendStatus(200);
         }
         catch (error) {

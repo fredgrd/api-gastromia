@@ -9,95 +9,91 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchCart = exports.validateCartUpdate = exports.validateItemAddition = exports.buildCart = void 0;
-const cartItemModel_1 = require("../models/cartItemModel");
-const cartModel_1 = require("../models/cartModel");
+exports.validateItemAddition = void 0;
+const mongoose_1 = require("mongoose");
+const itemAttributeModel_1 = require("../models/itemAttributeModel");
 const itemModel_1 = require("../models/itemModel");
-const buildCart = (attr) => __awaiter(void 0, void 0, void 0, function* () {
+// --------------------------------------------------------------------------
+// ItemAddition
+// Validates the submitted addition
+/// Checks if the item and attributes exist in the Doc structure
+/// Checks if the Attributes match the corresponding AttributeGroupRules
+const validateItemAddition = (item_id, attributes, quantity) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cart = cartModel_1.Cart.build(attr);
-        yield cart.save();
-        return { success: true, error: undefined, cart: cart };
+        const item = yield itemModel_1.Item.findById(item_id).orFail();
+        // Attributes deep check
+        // Check that rule conditions have been met
+        const docGroups = new Map([]);
+        for (const group of item.attribute_groups) {
+            if ((0, itemAttributeModel_1.isItemAttributeGroup)(group) && group._id) {
+                docGroups.set(group._id.toString(), {
+                    min: group.rules.group_min,
+                    max: group.rules.group_max,
+                    attribute_max: group.rules.attribute_max,
+                    attributes: group.attributes.map((e) => e.toString()),
+                    tot: 0,
+                });
+            }
+        }
+        for (const attribute of attributes) {
+            // Check if group exists
+            if (docGroups.has(attribute.group_id)) {
+                var docGroup = docGroups.get(attribute.group_id);
+            }
+            else {
+                console.log("ValidateItemAddition error: GroupDoesNotExist");
+                return null;
+            }
+            // Check if attribute exists
+            if (docGroup &&
+                docGroup.attributes.findIndex((e) => e === attribute.attribute_id) ===
+                    -1) {
+                console.log("ValidateItemAddition error: AttributeDoesNotExist");
+                return null;
+            }
+            // Check if attribute max condition is met
+            if (docGroup &&
+                attribute.quantity > docGroups.get(attribute.group_id).attribute_max) {
+                console.log("ValidateItemAddition error: AttributeBreaksMaxQuantity");
+                return null;
+            }
+            // Check if quantity is zero
+            if (attribute.quantity === 0) {
+                console.log("ValidateItemAddition error: AttributeZeroQuantity");
+                return null;
+            }
+            // Check if the total + quantity breaks the group max condition
+            if (docGroup && docGroup.tot + attribute.quantity > docGroup.max) {
+                console.log("ValidateItemAddition error: AttributesBreakGroupMaxQuantity");
+                return null;
+            }
+            else if (docGroup) {
+                docGroups.set(attribute.group_id, Object.assign(Object.assign({}, docGroup), { tot: docGroup.tot + attribute.quantity }));
+            }
+        }
+        // Check if min rules conditions are met
+        for (const [_, group] of docGroups) {
+            if (group.min > group.tot) {
+                console.log("ValidateItemAddition error: GroupMinNotMet");
+                return null;
+            }
+        }
+        // If all the checks are passed item addition is validate
+        return {
+            item: item._id,
+            item_version: item.item_version,
+            attributes: attributes.map((e) => ({
+                group_id: e.group_id,
+                attribute: new mongoose_1.Types.ObjectId(e.attribute_id),
+                quantity: e.quantity,
+            })),
+            quantity: quantity,
+        };
     }
     catch (error) {
         const mongooseError = error;
-        return { success: false, error: mongooseError, cart: undefined };
-    }
-});
-exports.buildCart = buildCart;
-const validateItemAddition = (item_id, attributes) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const item = yield itemModel_1.Item.findOne({ id: item_id, available: true }).populate("attribute_groups.attributes").orFail();
-    }
-    finally {
+        console.log(`ValidateItemAddition error: ${mongooseError}`);
+        return null;
     }
 });
 exports.validateItemAddition = validateItemAddition;
-const validateCartUpdate = (cartItem) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const item = yield itemModel_1.Item.findById(cartItem.item).orFail();
-        // 1. Check the CartItem has the same number of addition groups as the Item
-        const cartItemGroups = [
-            ...new Set(cartItem.additions.map((el) => el.group_id)),
-        ];
-        const itemGroups = item.additions.map((el) => el._id.toString());
-        if (cartItemGroups.join("") !== itemGroups.join("")) {
-            return false;
-        }
-        // 2. Addition groups check
-        /// 2a. Check group_min requirement is met (for each group)
-        /// 2b. Check group_max requirement is met (for each group)
-        /// 2c. Check addition_max requirement is met (for each addition)
-        for (const id of cartItemGroups) {
-            const group = item.additions.find((el) => el._id.toString() === id);
-            const group_min = group === null || group === void 0 ? void 0 : group.rules.group_min;
-            const group_max = group === null || group === void 0 ? void 0 : group.rules.group_max;
-            const addition_max = group === null || group === void 0 ? void 0 : group.rules.addition_max;
-            if (group === undefined ||
-                group_min === undefined ||
-                group_max === undefined ||
-                addition_max === undefined) {
-                return false;
-            }
-            const cartAdditions = cartItem.additions.filter((el) => el.group_id === id);
-            const additionsCheck = cartAdditions.reduce((acc, curr) => {
-                acc.total += curr.quantity;
-                acc.max = acc.max > curr.quantity ? acc.max : curr.quantity;
-                return acc;
-            }, { total: 0, max: 0 });
-            if (additionsCheck.total < group_min ||
-                additionsCheck.total > group_max ||
-                additionsCheck.max > addition_max) {
-                return false;
-            }
-        }
-        return true;
-    }
-    catch (error) {
-        console.log(`ValidateCartUpdate error: ${error}`);
-        return false;
-    }
-});
-exports.validateCartUpdate = validateCartUpdate;
-const patchCart = (owner_id, item) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const cart = yield cartModel_1.Cart.findOne({ owner_id: owner_id }).orFail();
-        const sameItem = cart.items.find((el) => (0, cartItemModel_1.cartItemsEquality)(el, item));
-        if (sameItem) {
-            sameItem.quantity += item.quantity;
-            cart.updatedAt = Date.now();
-            yield cart.save();
-        }
-        else {
-            cart.items.push(item);
-            cart.updatedAt = Date.now();
-            yield cart.save();
-        }
-        return { success: true, error: undefined, cart: cart };
-    }
-    catch (error) {
-        const mongooseError = error;
-        return { success: false, error: mongooseError, cart: undefined };
-    }
-});
-exports.patchCart = patchCart;

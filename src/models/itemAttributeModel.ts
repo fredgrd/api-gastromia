@@ -1,6 +1,42 @@
 import { Schema, Types, model } from "mongoose";
 
+// --------------------------------------------------------------------------
+// Helpers
+
+// Checks if the object provided is an ItemAttribute
+export const isItemAttribute = (
+  itemAttribute: any
+): itemAttribute is IItemAttribute => {
+  const unsafeCast = itemAttribute as IItemAttribute;
+
+  return (
+    unsafeCast._id !== undefined &&
+    unsafeCast.name !== undefined &&
+    unsafeCast.available !== undefined &&
+    unsafeCast.price !== undefined &&
+    unsafeCast.media_url !== undefined &&
+    unsafeCast.unique_tag !== undefined
+  );
+};
+
+// Checks if the object provided is an ItemAttributeGroup
+export const isItemAttributeGroup = (
+  group: any
+): group is IItemAttributeGroup => {
+  const unsafeCast = group as IItemAttributeGroup;
+
+  return (
+    unsafeCast._id !== undefined &&
+    unsafeCast.with_media !== undefined &&
+    unsafeCast.rules !== undefined &&
+    unsafeCast.name !== undefined &&
+    unsafeCast.description !== undefined &&
+    unsafeCast.attributes !== undefined
+  );
+};
+
 export interface IItemAttribute {
+  _id?: Types.ObjectId;
   name: string;
   unique_tag: string;
   price: number;
@@ -68,6 +104,7 @@ export const ItemAttributeGroupRulesSchema =
   );
 
 export interface IItemAttributeGroup {
+  _id?: Types.ObjectId;
   with_media: boolean;
   rules: IItemAttributeGroupRules;
   name: string;

@@ -1,8 +1,10 @@
-import { Schema, Types } from "mongoose";
+import { Schema, Types, model } from "mongoose";
+import { IItemAttribute } from "./itemAttributeModel";
+import { IItem } from "./itemModel";
 
 export interface ICartAttribute {
   group_id: string; // ID needed for validation
-  attribute: Types.ObjectId; // Will be populated when computing cart / item total
+  attribute: Types.ObjectId | IItemAttribute; // Will be populated when computing cart / item total
   quantity: number;
 }
 
@@ -14,6 +16,7 @@ export const CartAttributeSchema = new Schema<ICartAttribute>(
     },
     attribute: {
       type: Schema.Types.ObjectId,
+      ref: "ItemAttribute",
       required: true,
     },
     quantity: {
@@ -26,13 +29,19 @@ export const CartAttributeSchema = new Schema<ICartAttribute>(
 );
 
 export interface ICartItem {
-  item: Types.ObjectId; // Will be populated when computing the cart total
+  _id?: Types.ObjectId;
+  item: Types.ObjectId | IItem; // Will be populated when computing the cart total
+  item_version: string;
   attributes: ICartAttribute[];
   quantity: number;
 }
 
 export const CartItemSchema = new Schema<ICartItem>({
-  item: { type: Schema.Types.ObjectId, required: true },
+  item: { type: Schema.Types.ObjectId, ref: "Item", required: true },
+  item_version: {
+    type: String,
+    required: true,
+  },
   attributes: {
     type: [CartAttributeSchema],
     required: true,
@@ -44,3 +53,21 @@ export const CartItemSchema = new Schema<ICartItem>({
     default: 1,
   },
 });
+
+// --------------------------------------------------------------------------
+// Client Interfaces
+
+export interface IClientCartItemAttribute {
+  name: string;
+  quantity: number;
+}
+
+export interface IClientCartItem {
+  id: string;
+  item_id: string;
+  name: string;
+  preview_url: string;
+  attributes: IClientCartItemAttribute[];
+  quantity: number;
+  total: number;
+}

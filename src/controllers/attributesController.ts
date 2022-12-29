@@ -1,23 +1,14 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import DatabaseService from "../services/databaseService";
-import { IItemAttribute, ItemAttribute } from "../models/itemAttributeModel";
+import {
+  IItemAttribute,
+  ItemAttribute,
+  isItemAttribute,
+} from "../models/itemAttributeModel";
 
 // --------------------------------------------------------------------------
 // ItemAttribute
-
-// Checks if the object provided is an ItemAttribute
-const isItemAttribute = (attribute: any): boolean => {
-  const unsafeCast = attribute as IItemAttribute;
-
-  return (
-    unsafeCast.media_url !== undefined &&
-    unsafeCast.name !== undefined &&
-    unsafeCast.available !== undefined &&
-    unsafeCast.price !== undefined &&
-    unsafeCast.unique_tag !== undefined
-  );
-};
 
 // Create an ItemAttribute Document
 /// If the object provided does not conform to the ItemAttribute interface fails
@@ -49,19 +40,6 @@ export const createItemAttribute = async (req: Request, res: Response) => {
   }
 };
 
-// Check if the object provided matches at least one of the ItemAttribute props
-const isItemAttributeUpdate = (update: any) => {
-  const unsafeCast = update as IItemAttribute;
-
-  return (
-    unsafeCast.media_url !== undefined ||
-    unsafeCast.name !== undefined ||
-    unsafeCast.available !== undefined ||
-    unsafeCast.price !== undefined ||
-    unsafeCast.unique_tag !== undefined
-  );
-};
-
 // Update an ItemAttribute Document
 /// If the props object provided do not conform to the ItemAttribute interface fails
 export const updateItemAttribute = async (req: Request, res: Response) => {
@@ -83,10 +61,14 @@ export const updateItemAttribute = async (req: Request, res: Response) => {
     return;
   }
 
-  if (update && isItemAttributeUpdate(update)) {
+  if (update) {
     try {
-      let itemAttribute = await ItemAttribute.findById(attributeId).orFail();
-      await itemAttribute.update(update);
+      const itemAttribute = await ItemAttribute.findOneAndUpdate(
+        { _id: attributeId },
+        update,
+        { new: true }
+      );
+      res.status(200).json(itemAttribute);
       res.sendStatus(200);
     } catch (error) {
       const mongooseError = error as MongooseError;
