@@ -1,21 +1,13 @@
-import mongoose from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 export interface IUser {
+  _id?: Types.ObjectId;
   number: string;
   name: string;
+  createdAt?: Date;
 }
 
-export interface UserDoc extends mongoose.Document {
-  number: string;
-  name: string;
-  createdAt: Date;
-}
-
-interface UserModelInterface extends mongoose.Model<UserDoc> {
-  build(attr: IUser): UserDoc;
-}
-
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   number: {
     type: String,
     required: true,
@@ -32,11 +24,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.build = (attr: IUser) => {
-  return new User(attr);
-};
-
-export const User = mongoose.model<UserDoc, UserModelInterface>(
-  "User",
-  userSchema
-);
+export const User = model<IUser>("User", userSchema);

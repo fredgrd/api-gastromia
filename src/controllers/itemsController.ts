@@ -1,38 +1,11 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
-import { IItemAttributeGroup } from "../models/itemAttributeModel";
-import { Item } from "../models/itemModel";
-import { IItem } from "../models/itemModel";
+import { v4 as uuidv4 } from "uuid";
+import { Item, isItem } from "../models/itemModel";
 import DatabaseService from "../services/databaseService";
-import { buildItem } from "../services/itemService";
-import { buildAddition } from "../services/itemService";
 
 // --------------------------------------------------------------------------
 // Item
-
-// Checks if the object provided is an Item
-/// Update the length check of the object keys w/ latest value
-const isItem = (item: any): boolean => {
-  const unsafeCast = item as IItem;
-
-  return (
-    unsafeCast.name !== undefined &&
-    unsafeCast.description !== undefined &&
-    unsafeCast.available !== undefined &&
-    unsafeCast.available !== undefined &&
-    unsafeCast.quick_add !== undefined &&
-    unsafeCast.price !== undefined &&
-    unsafeCast.discount !== undefined &&
-    unsafeCast.discount_price !== undefined &&
-    unsafeCast.discount_label !== undefined &&
-    unsafeCast.attribute_groups !== undefined &&
-    unsafeCast.tags !== undefined &&
-    unsafeCast.category !== undefined &&
-    unsafeCast.media_url !== undefined &&
-    unsafeCast.preview_url !== undefined &&
-    Object.keys(unsafeCast).length === 13
-  );
-};
 
 // Create an Item Document
 /// If the object provided does not conform to the Item interface fails
@@ -63,15 +36,43 @@ export const createItem = async (req: Request, res: Response) => {
   }
 };
 
-export const createAddition = async (req: Request, res: Response) => {
-  const addition = req.body.addition;
+export const updateItem = async (req: Request, res: Response) => {
+  const itemId = req.body.item_id;
+  const update = req.body.update;
+  const token = req.body.token;
+  const databaseService = new DatabaseService();
+  const decodedToken = databaseService.verifyToken(token);
 
-  const newAddition = await buildAddition(addition);
+  if (!decodedToken) {
+    console.log("UpdateItem error: OperationTokenNotValid");
+    res.sendStatus(403); // Forbidden
+    return;
+  }
 
-  if (newAddition) {
-    res.sendStatus(200);
+  if (!itemId) {
+    console.log("UpdateItem error: ItemIdNotProvided");
+    res.sendStatus(400);
+    return;
+  }
+
+  if (update) {
+    try {
+      const item = await Item.findOneAndUpdate(
+        { _id: itemId },
+        { ...update, item_version: uuidv4() },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json(item);
+    } catch (error) {
+      const mongooseError = error as MongooseError;
+      console.log(`UpdateItemAttribute error: ${mongooseError.name}`);
+      res.sendStatus(500);
+    }
   } else {
-    res.sendStatus(500);
+    console.log("UpdateItemAttribute error: UpdateBadlyFormatted");
+    res.sendStatus(400);
   }
 };
 

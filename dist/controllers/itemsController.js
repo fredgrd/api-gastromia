@@ -12,32 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.createAddition = exports.createItem = void 0;
+exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.updateItem = exports.createItem = void 0;
+const uuid_1 = require("uuid");
 const itemModel_1 = require("../models/itemModel");
 const databaseService_1 = __importDefault(require("../services/databaseService"));
-const itemService_1 = require("../services/itemService");
 // --------------------------------------------------------------------------
 // Item
-// Checks if the object provided is an Item
-/// Update the length check of the object keys w/ latest value
-const isItem = (item) => {
-    const unsafeCast = item;
-    return (unsafeCast.name !== undefined &&
-        unsafeCast.description !== undefined &&
-        unsafeCast.available !== undefined &&
-        unsafeCast.available !== undefined &&
-        unsafeCast.quick_add !== undefined &&
-        unsafeCast.price !== undefined &&
-        unsafeCast.discount !== undefined &&
-        unsafeCast.discount_price !== undefined &&
-        unsafeCast.discount_label !== undefined &&
-        unsafeCast.attribute_groups !== undefined &&
-        unsafeCast.tags !== undefined &&
-        unsafeCast.category !== undefined &&
-        unsafeCast.media_url !== undefined &&
-        unsafeCast.preview_url !== undefined &&
-        Object.keys(unsafeCast).length === 13);
-};
 // Create an Item Document
 /// If the object provided does not conform to the Item interface fails
 const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -49,7 +29,7 @@ const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.sendStatus(403); // Forbidden
         return;
     }
-    if (item && isItem(item)) {
+    if (item && (0, itemModel_1.isItem)(item)) {
         try {
             const newItem = new itemModel_1.Item(Object.assign({}, item));
             yield newItem.save();
@@ -67,17 +47,41 @@ const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createItem = createItem;
-const createAddition = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const addition = req.body.addition;
-    const newAddition = yield (0, itemService_1.buildAddition)(addition);
-    if (newAddition) {
-        res.sendStatus(200);
+const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const itemId = req.body.item_id;
+    const update = req.body.update;
+    const token = req.body.token;
+    const databaseService = new databaseService_1.default();
+    const decodedToken = databaseService.verifyToken(token);
+    if (!decodedToken) {
+        console.log("UpdateItem error: OperationTokenNotValid");
+        res.sendStatus(403); // Forbidden
+        return;
+    }
+    if (!itemId) {
+        console.log("UpdateItem error: ItemIdNotProvided");
+        res.sendStatus(400);
+        return;
+    }
+    if (update) {
+        try {
+            const item = yield itemModel_1.Item.findOneAndUpdate({ _id: itemId }, Object.assign(Object.assign({}, update), { item_version: (0, uuid_1.v4)() }), {
+                new: true,
+            });
+            res.status(200).json(item);
+        }
+        catch (error) {
+            const mongooseError = error;
+            console.log(`UpdateItemAttribute error: ${mongooseError.name}`);
+            res.sendStatus(500);
+        }
     }
     else {
-        res.sendStatus(500);
+        console.log("UpdateItemAttribute error: UpdateBadlyFormatted");
+        res.sendStatus(400);
     }
 });
-exports.createAddition = createAddition;
+exports.updateItem = updateItem;
 const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.query.k;
     const searchId = req.query.search_id;

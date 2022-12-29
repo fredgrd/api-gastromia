@@ -9,6 +9,7 @@ exports.CartAttributeSchema = new mongoose_1.Schema({
     },
     attribute: {
         type: mongoose_1.Schema.Types.ObjectId,
+        ref: "ItemAttribute",
         required: true,
     },
     quantity: {
@@ -18,7 +19,11 @@ exports.CartAttributeSchema = new mongoose_1.Schema({
     },
 }, { _id: false });
 exports.CartItemSchema = new mongoose_1.Schema({
-    item: { type: mongoose_1.Schema.Types.ObjectId, required: true },
+    item: { type: mongoose_1.Schema.Types.ObjectId, ref: "Item", required: true },
+    item_version: {
+        type: String,
+        required: true,
+    },
     attributes: {
         type: [exports.CartAttributeSchema],
         required: true,

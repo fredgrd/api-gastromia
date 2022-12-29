@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const userSchema = new mongoose_1.default.Schema({
+const mongoose_1 = require("mongoose");
+const userSchema = new mongoose_1.Schema({
     number: {
         type: String,
         required: true,
@@ -21,7 +18,4 @@ const userSchema = new mongoose_1.default.Schema({
         default: Date.now,
     },
 });
-userSchema.statics.build = (attr) => {
-    return new exports.User(attr);
-};
-exports.User = mongoose_1.default.model("User", userSchema);
+exports.User = (0, mongoose_1.model)("User", userSchema);

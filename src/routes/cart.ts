@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { createCart, update, updateCart } from "../controllers/cartController";
+import { updateCart, fetchCart } from "../controllers/cartController";
 
 const router = Router();
 
-router.post("/create", createCart);
+router.get("/", fetchCart);
 
 router.patch("/update", updateCart);
 
