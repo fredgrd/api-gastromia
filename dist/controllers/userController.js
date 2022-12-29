@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.fetchUser = void 0;
 const userService_1 = require("../services/userService");
+// Fetches the user from the provided token
 const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Call", Date.now());
     const token = req.cookies.token;
@@ -59,6 +60,12 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             name: name,
         });
         if (newUser) {
+            const token = userService.signToken(userNumber !== null && userNumber !== void 0 ? userNumber : "");
+            res.cookie("token", token, {
+                maxAge: 60 * 60 * 24 * 10 * 1000,
+                httpOnly: true,
+                secure: true,
+            });
             res.status(200).json({
                 id: newUser._id,
                 name: newUser.name,

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService";
 
+// Fetches the user from the provided token
 export const fetchUser = async (req: Request, res: Response) => {
   console.log("Call", Date.now());
   const token = req.cookies.token;
@@ -58,6 +59,14 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     if (newUser) {
+      const token = userService.signToken(userNumber ?? "");
+
+      res.cookie("token", token, {
+        maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
+        httpOnly: true,
+        secure: true,
+      });
+
       res.status(200).json({
         id: newUser._id,
         name: newUser.name,

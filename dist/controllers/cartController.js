@@ -15,15 +15,14 @@ const cartModel_1 = require("../models/cartModel");
 const itemModel_1 = require("../models/itemModel");
 const cartOperations_1 = require("../models/cartOperations");
 const itemAttributeModel_1 = require("../models/itemAttributeModel");
-const isOperation = (operation) => {
-    const unsafeCast = operation;
-    return (unsafeCast.type !== undefined &&
-        unsafeCast.quantity !== undefined &&
-        (unsafeCast.cart_item_id !== undefined || unsafeCast.item_id !== undefined));
-};
+// --------------------------------------------------------------------------
+// Cart
+// Updates the cart with either an ADD or MODIFY operation
+/// ADD: Adds the provided CartItem to the cart
+/// MODIFY: Changes the quantity of a specific CartItem (if 0 removes from the cart).
 const updateCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Retrieve user id from token
-    if (req.body || isOperation(req.body)) {
+    if (req.body || (0, cartOperations_1.isOperation)(req.body)) {
         var operation = req.body;
     }
     else {
@@ -84,6 +83,7 @@ const updateCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateCart = updateCart;
 const fetchCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const owner_id = req.body.owner_id;
+    console.log(req.cookies.token);
     if (!owner_id) {
         console.log("FetchCart error: NoOwner");
         res.sendStatus(400);

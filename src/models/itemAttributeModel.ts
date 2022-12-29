@@ -35,6 +35,9 @@ export const isItemAttributeGroup = (
   );
 };
 
+// --------------------------------------------------------------------------
+// Interface / Schema / Model
+
 export interface IItemAttribute {
   _id?: Types.ObjectId;
   name: string;

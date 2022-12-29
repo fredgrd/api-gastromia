@@ -1,4 +1,19 @@
-import { ICartAttribute } from "./cartItemModel";
+// --------------------------------------------------------------------------
+// Helpers
+
+// Check if the object is a ICartOperation
+export const isOperation = (operation: any) => {
+  const unsafeCast = operation as ICartOperation;
+
+  return (
+    unsafeCast.type !== undefined &&
+    unsafeCast.quantity !== undefined &&
+    (unsafeCast.cart_item_id !== undefined || unsafeCast.item_id !== undefined)
+  );
+};
+
+// --------------------------------------------------------------------------
+// Interface / Schema / Model
 
 export enum CartOperationType {
   Modify = "modify",

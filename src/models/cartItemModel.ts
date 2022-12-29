@@ -1,6 +1,9 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, Types } from "mongoose";
 import { IItemAttribute } from "./itemAttributeModel";
 import { IItem } from "./itemModel";
+
+// --------------------------------------------------------------------------
+// Interface / Schema / Model
 
 export interface ICartAttribute {
   group_id: string; // ID needed for validation

@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { MongooseError, HydratedDocument, Types } from "mongoose";
+import { MongooseError, HydratedDocument } from "mongoose";
 import { validateItemAddition } from "../services/cartService";
-
 import { Cart, ICart } from "../models/cartModel";
-
-import { IItem, isItem } from "../models/itemModel";
-
-import { CartOperationType, ICartOperation } from "../models/cartOperations";
+import { isItem } from "../models/itemModel";
+import {
+  CartOperationType,
+  ICartOperation,
+  isOperation,
+} from "../models/cartOperations";
 import {
   ICartItem,
   IClientCartItem,
@@ -14,16 +15,12 @@ import {
 } from "../models/cartItemModel";
 import { isItemAttribute } from "../models/itemAttributeModel";
 
-const isOperation = (operation: any) => {
-  const unsafeCast = operation as ICartOperation;
+// --------------------------------------------------------------------------
+// Cart
 
-  return (
-    unsafeCast.type !== undefined &&
-    unsafeCast.quantity !== undefined &&
-    (unsafeCast.cart_item_id !== undefined || unsafeCast.item_id !== undefined)
-  );
-};
-
+// Updates the cart with either an ADD or MODIFY operation
+/// ADD: Adds the provided CartItem to the cart
+/// MODIFY: Changes the quantity of a specific CartItem (if 0 removes from the cart).
 export const updateCart = async (req: Request, res: Response) => {
   // Retrieve user id from token
   if (req.body || isOperation(req.body)) {
@@ -96,6 +93,8 @@ export const updateCart = async (req: Request, res: Response) => {
 
 export const fetchCart = async (req: Request, res: Response) => {
   const owner_id = req.body.owner_id;
+
+  console.log(req.cookies.token);
 
   if (!owner_id) {
     console.log("FetchCart error: NoOwner");
