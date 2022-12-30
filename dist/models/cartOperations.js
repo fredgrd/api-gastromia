@@ -17,4 +17,5 @@ var CartOperationType;
 (function (CartOperationType) {
     CartOperationType["Modify"] = "modify";
     CartOperationType["Add"] = "add";
+    CartOperationType["QuickAdd"] = "quickadd";
 })(CartOperationType = exports.CartOperationType || (exports.CartOperationType = {}));

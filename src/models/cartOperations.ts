@@ -18,6 +18,7 @@ export const isOperation = (operation: any) => {
 export enum CartOperationType {
   Modify = "modify",
   Add = "add",
+  QuickAdd = "quickadd",
 }
 
 export interface ICartOperationAttribute {
@@ -27,7 +28,6 @@ export interface ICartOperationAttribute {
 }
 
 export interface ICartOperation {
-  owner_id: string;
   type: CartOperationType;
   cart_item_id?: string; // Needed if type is modify - Change the quantity of the selected item
   item_id?: string;

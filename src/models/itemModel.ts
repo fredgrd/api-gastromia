@@ -1,6 +1,9 @@
 import { Schema, Types, model, InferSchemaType } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { ItemAttributeGroupSchema } from "./itemAttributeModel";
+import {
+  IItemAttributeGroup,
+  ItemAttributeGroupSchema,
+} from "./itemAttributeModel";
 
 // --------------------------------------------------------------------------
 // Helpers
@@ -42,7 +45,7 @@ export interface IItem {
   discount: boolean;
   discount_price: number;
   discount_label: string;
-  attribute_groups: InferSchemaType<typeof ItemAttributeGroupSchema>[];
+  attribute_groups: IItemAttributeGroup[];
   tags: string[];
   category: string;
   media_url: string;

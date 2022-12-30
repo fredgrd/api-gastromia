@@ -13,6 +13,7 @@ const user_1 = require("./routes/user");
 const webhooks_1 = require("./routes/webhooks");
 const items_1 = require("./routes/items");
 const cart_1 = require("./routes/cart");
+const stripe_1 = require("./routes/stripe");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3001;
@@ -42,6 +43,8 @@ app.use("/user", user_1.userRouter);
 app.use("/items", items_1.itemsRouter);
 // Cart routes
 app.use("/cart", cart_1.cartRouter);
+// Stripe routes
+app.use("/stripe", stripe_1.stripeRouter);
 // Whatsapp
 app.use("/webhooks", webhooks_1.webhooksRouter);
 app.listen(port, () => {

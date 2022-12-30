@@ -7,3 +7,4 @@ const router = (0, express_1.Router)();
 exports.cartRouter = router;
 router.get("/", cartController_1.fetchCart);
 router.patch("/update", cartController_1.updateCart);
+router.patch("/snapshot", cartController_1.updateSnapshot);

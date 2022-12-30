@@ -1,81 +1,112 @@
 import { Request, Response } from "express";
-import { UserService } from "../services/userService";
+import { MongooseError } from "mongoose";
+import { User } from "../models/userModel";
+import StripeService from "../services/stripeService";
+import {
+  signAuthToken,
+  verifyAuthToken,
+  verifySignupToken,
+} from "../helpers/jwtTokens";
 
-// Fetches the user from the provided token
+// Fetches the user from a valid AuthToken
+/// Returns both the User object and an updated AuthToken
 export const fetchUser = async (req: Request, res: Response) => {
-  console.log("Call", Date.now());
-  const token = req.cookies.token;
-  const userService = new UserService();
+  const token = req.cookies.auth_token;
 
-  console.log("HAS TOKEN?", token);
-
-  if (!token) {
-    res.sendStatus(400);
+  if (!token || typeof token !== "string") {
+    console.log("FetchUser error: MissingToken");
+    res.sendStatus(403);
     return;
   }
 
   // Verify token
-  const userNumber = userService.verifyToken(token || "");
-  const foundUser = await userService.fetchUser(userNumber || "");
+  const authtoken = verifyAuthToken(token);
 
-  if (foundUser) {
-    const token = userService.signToken(userNumber ?? "");
+  if (!authtoken) {
+    console.log("FetchUser error: NotAuthToken");
+    res.sendStatus(403);
+    return;
+  }
 
-    res.cookie("token", token, {
+  try {
+    const user = await User.findById(authtoken.id).orFail();
+
+    // Update the AuthToken
+    const token = signAuthToken({
+      id: user.id,
+      stripe_id: user.stripe_id,
+      number: user.number,
+    });
+    res.cookie("auth_token", token, {
       maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
       httpOnly: true,
       secure: true,
     });
 
-    res.status(200).json({
-      id: foundUser._id,
-      name: foundUser.name,
-      number: foundUser.number,
-    });
-  } else {
-    console.log(`Could not find users for: ${userNumber}`);
-    res.sendStatus(400);
+    res.status(200).json(user);
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(`FetchUser error: ${mongooseError.message}`);
   }
 };
 
+// Creates a user from a valid signup token
+/// Returns both the User object and an AuthToken
 export const createUser = async (req: Request, res: Response) => {
-  const token = req.cookies.token;
+  const token = req.cookies.signup_token;
   const name = req.body.name;
-  const userService = new UserService();
+  const stripeService = new StripeService();
 
-  if (!token) {
-    res.sendStatus(400);
+  if (!token || typeof token !== "string") {
+    console.log("CreateUser error: MissingToken");
+    res.sendStatus(403);
     return;
   }
 
   // Verify token
-  const userNumber = userService.verifyToken(token || "");
-  const foundUser = await userService.fetchUser(userNumber || "");
+  const signupToken = verifySignupToken(token);
 
-  if (userNumber && !foundUser) {
-    const newUser = await userService.createUser({
-      number: userNumber,
+  if (!signupToken) {
+    console.log("CreateUser error: NotSignupToken");
+    res.sendStatus(403);
+    return;
+  }
+
+  try {
+    const user = await User.create({
+      stripe_id: "awaiting",
+      number: signupToken.number,
       name: name,
+      email: "noemail",
     });
 
-    if (newUser) {
-      const token = userService.signToken(userNumber ?? "");
+    const customerId = await stripeService.createCustomer(user.id);
 
-      res.cookie("token", token, {
+    if (customerId) {
+      user.stripe_id = customerId;
+      await user.save();
+
+      // Set cookie
+      const token = signAuthToken({
+        id: user.id,
+        stripe_id: user.stripe_id,
+        number: user.number,
+      });
+      res.cookie("auth_token", token, {
         maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
         httpOnly: true,
         secure: true,
       });
 
-      res.status(200).json({
-        id: newUser._id,
-        name: newUser.name,
-        number: newUser.number,
-      });
+      res.status(200).json(user);
     } else {
-      res.sendStatus(400);
+      user.delete();
+      console.log("CreateUser error: StripeCustomerError");
+      res.sendStatus(500);
     }
-  } else {
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(`CreateUser error: ${mongooseError.message}`);
     res.sendStatus(400);
   }
 };
