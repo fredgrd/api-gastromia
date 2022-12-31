@@ -11,6 +11,7 @@ import { webhooksRouter } from "./routes/webhooks";
 import { itemsRouter } from "./routes/items";
 import { cartRouter } from "./routes/cart";
 import { stripeRouter } from "./routes/stripe";
+import { orderRouter } from "./routes/order";
 
 dotenv.config();
 
@@ -55,6 +56,9 @@ app.use("/cart", cartRouter);
 
 // Stripe routes
 app.use("/stripe", stripeRouter);
+
+// Order routes
+app.use("/order", orderRouter);
 
 // Whatsapp
 app.use("/webhooks", webhooksRouter);
