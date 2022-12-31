@@ -51,6 +51,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         const mongooseError = error;
         console.log(`FetchUser error: ${mongooseError.message}`);
+        res.sendStatus(500);
     }
 });
 exports.fetchUser = fetchUser;

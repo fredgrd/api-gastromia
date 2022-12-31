@@ -48,6 +48,7 @@ export const fetchUser = async (req: Request, res: Response) => {
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(`FetchUser error: ${mongooseError.message}`);
+    res.sendStatus(500);
   }
 };
 
