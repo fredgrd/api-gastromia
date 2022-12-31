@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateCartSnapshot = void 0;
+exports.priceCartSnapshot = exports.validateCartSnapshot = void 0;
 const itemAttributeModel_1 = require("../models/itemAttributeModel");
 // Validate CartSnapshot
 const validateCartSnapshot = (items, snapshotItems) => {
@@ -147,3 +147,14 @@ const validateCartSnapshot = (items, snapshotItems) => {
     return { included, excluded };
 };
 exports.validateCartSnapshot = validateCartSnapshot;
+// Prices the cart snapshot
+//// Should be run after validate cart snapshot
+const priceCartSnapshot = (items) => {
+    const total = items.reduce((acc, curr) => {
+        // Price attributes
+        const attributesTotal = curr.attributes_snapshot.reduce((accTotal, attribute) => accTotal + attribute.price * attribute.quantity, 0);
+        return acc + (curr.price + attributesTotal) * curr.quantity;
+    }, 0);
+    return total;
+};
+exports.priceCartSnapshot = priceCartSnapshot;
