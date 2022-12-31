@@ -1,186 +1,198 @@
 import { Types } from "mongoose";
+import { isItem, IItem } from "../models/itemModel";
 import {
-  ICartItem,
-  ICartAttribute,
-  IClientCartItem,
-  IClientCartItemAttribute,
-} from "../models/cartItemModel";
-import { isItem } from "../models/itemModel";
-import {
+  IItemAttribute,
   IItemAttributeGroup,
   isItemAttribute,
 } from "../models/itemAttributeModel";
-import { ICartOperationAttribute } from "../models/cartOperations";
-import { ICartItemAttributeSnapshot } from "../models/cartSnapshot";
+import { ICartItemSnapshot } from "../models/cartSnapshot";
 
-// Turn snapshot item attributes into an organized mao
-export const mapSnapshotAttributes = (
-  attributes: ICartItemAttributeSnapshot[]
-): Map<string, ICartItemAttributeSnapshot[]> => {
-  const map = new Map<string, ICartItemAttributeSnapshot[]>([]);
-
-  attributes.forEach((attribute) => {
-    const attributeSnapshot = map.get(attribute.group_id);
-    if (attributeSnapshot) {
-      attributeSnapshot.push(attribute);
-      map.set(attribute.group_id, attributeSnapshot);
-    } else {
-      map.set(attribute.group_id, [attribute]);
-    }
-  });
-
-  return map;
-};
-
-// Validates the item attributes
-/// Returns the a CartAttribute array if validation is passed, otherwise returns null
-export const validateItemAttributes = (
-  itemAttributeGroups: IItemAttributeGroup[],
-  operationAttributes: ICartOperationAttribute[]
-): ICartAttribute[] | null => {
-  const attributesTotByGroup: Map<string, number> = new Map([]);
-  itemAttributeGroups.forEach((e) =>
-    attributesTotByGroup.set(e._id?.toString() || "", 0)
-  );
-
-  for (const attribute of operationAttributes) {
-    // Check if group exists
-    const group = itemAttributeGroups.find(
-      (e) => e._id?.toString() === attribute.group_id
-    );
-
-    if (group === undefined || group._id === undefined) {
-      return null;
+// Validate CartSnapshot
+export const validateCartSnapshot = (
+  items: IItem[],
+  snapshotItems: ICartItemSnapshot[]
+): {
+  included: ICartItemSnapshot[];
+  excluded: { item: ICartItemSnapshot; message: string }[];
+} => {
+  // Validate the snapshot
+  //// Validate item existence
+  //// Validate item availability
+  //// Validate item price
+  //// Validate attributes existence
+  //// Validate attributes availability
+  //// Validate attributes prices
+  //// Validate rule
+  const included: ICartItemSnapshot[] = [];
+  const excluded: { item: ICartItemSnapshot; message: string }[] = [];
+  for (const snapshotItem of snapshotItems) {
+    if (snapshotItem.quantity <= 0 || snapshotItem.quantity > 99) {
+      continue;
     }
 
-    // Check if attribute exists in item doc
+    const item = items.find((e) => e._id?.toString() === snapshotItem.item_id);
+
+    // Edge case
+    //// Item does not exist
+    if (!item) {
+      continue;
+    }
+
+    // Not available
+    //// Handles item availability changes not reflected in cart
+    if (!item.available) {
+      excluded.push({
+        item: snapshotItem,
+        message: "Prodotto non è disponibile",
+      });
+      continue;
+    }
+
+    // Price difference
+    //// Handles item price changes not reflected in cart
     if (
-      group.attributes.findIndex(
-        (e) => e._id.toString() === attribute.attribute_id
-      ) === -1
+      (item.discount ? item.discount_price : item.price) !== snapshotItem.price
     ) {
-      console.log("ValidateItemAttributes error: AttributeDoesNotExist");
-      console.log(
-        `Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`
-      );
-      return null;
+      excluded.push({
+        item: snapshotItem,
+        message: "Prodotto non aggiornato",
+      });
+      continue;
     }
 
-    // Check if attribute max condition is met
-    if (attribute.quantity > group.rules.attribute_max) {
-      console.log("ValidateItemAttributes error: AttributeBreaksMaxQuantity");
-      console.log(
-        `Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`
-      );
-      return null;
+    // Quick add
+    //// If item can be quick-added add to included items
+    if (item.quick_add && !snapshotItem.attributes_snapshot.length) {
+      included.push(snapshotItem);
+      continue;
     }
 
-    // Check if quantity is zero
-    if (attribute.quantity === 0) {
-      console.log("ValidateItemAttributes error: AttributeZeroQuantity");
-      console.log(
-        `Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`
+    // Validate attributes
+    let attributesValid = true;
+    const groupTotals: Map<string, number> = new Map([]);
+    for (const snapshotAttribute of snapshotItem.attributes_snapshot) {
+      if (snapshotAttribute.quantity <= 0 || snapshotAttribute.quantity > 99) {
+        attributesValid = false;
+        break;
+      }
+
+      const group = item.attribute_groups.find(
+        (e) => e._id?.toString() === snapshotAttribute.group_id
       );
-      return null;
+
+      if (!group) {
+        attributesValid = false;
+        break;
+      }
+
+      const attributes: IItemAttribute[] = group.attributes.flatMap((e) =>
+        isItemAttribute(e) ? e : []
+      );
+
+      const attribute = attributes.find(
+        (e) => e._id?.toString() === snapshotAttribute.attribute_id
+      );
+
+      if (!attribute) {
+        attributesValid = false;
+        break;
+      }
+
+      if (!attribute.available) {
+        excluded.push({
+          item: snapshotItem,
+          message: "Una o più aggiunte non disponibili",
+        });
+        attributesValid = false;
+        break;
+      }
+
+      if (attribute.price !== snapshotAttribute.price) {
+        excluded.push({
+          item: snapshotItem,
+          message: "Una o più aggiunte non aggiornate",
+        });
+        attributesValid = false;
+        break;
+      }
+
+      // VALIDATE ATTRIBUTE RULES
+
+      // Count group total
+      let groupTotal = groupTotals.get(group._id!.toString());
+      if (!groupTotal) {
+        groupTotals.set(group._id!.toString(), 0);
+        groupTotal = 0;
+      }
+
+      if (snapshotAttribute.quantity > group.rules.attribute_max) {
+        // Rules broken
+        attributesValid = false;
+        break;
+      }
+
+      if (groupTotal + snapshotAttribute.quantity > group.rules.group_max) {
+        // Rules broken
+        attributesValid = false;
+        break;
+      }
+
+      // Rules not broken
+      groupTotals.set(
+        group._id!.toString(),
+        groupTotal + snapshotAttribute.quantity
+      );
     }
 
-    // Check if the total + quantity breaks the group max condition
-    const groupTot = attributesTotByGroup.get(group._id.toString());
-    if (
-      groupTot !== undefined &&
-      groupTot + attribute.quantity > group.rules.group_max
-    ) {
-      console.log(
-        "ValidateItemAttribute error: AttributesBreakGroupMaxQuantity"
-      );
-      console.log(
-        `Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`
-      );
-      return null;
-    } else if (groupTot) {
-      attributesTotByGroup.set(
-        attribute.group_id,
-        groupTot + attribute.quantity
-      );
+    // Edge case
+    //// Client was able to brake rules
+    if (!attributesValid) {
+      continue;
     }
+
+    // VALIDATE GROUP RULES
+    let conditionsMet = true;
+    for (const group of item.attribute_groups) {
+      if (!group._id) {
+        conditionsMet = false;
+        break;
+      }
+
+      const groupTotal = groupTotals.get(group._id.toString()); // Group totals
+
+      //// Was not added to item. Client could not add to cart
+      //// No groupTotal exists meaning attribute not added by user
+      //// Conditions are met because user was not forced to add
+      if (!groupTotal && group.rules.group_min === 0) {
+        break;
+      }
+
+      if (!groupTotal) {
+        conditionsMet = false;
+        break;
+      }
+
+      //// Client was able to brake rules
+      if (group.rules.group_min > groupTotal) {
+        conditionsMet = false;
+        break;
+      }
+
+      //// Client was able to brake rules
+      if (groupTotal > group.rules.group_max) {
+        conditionsMet = false;
+        break;
+      }
+    }
+
+    if (!conditionsMet) {
+      continue;
+    }
+
+    // VALIDATION PASSED
+    included.push(snapshotItem);
   }
 
-  // All checks passed
-  return operationAttributes.map((e) => ({
-    group_id: e.group_id,
-    attribute: new Types.ObjectId(e.attribute_id),
-    quantity: e.quantity,
-  }));
-};
-
-// Updates and prices every item in the cart
-/// Excludes items not available or that contain attributes not available
-export const updateAndPriceCart = (cartItems: ICartItem[]) => {
-  const clientItems: IClientCartItem[] = [];
-  const excludedClientItems: string[] = [];
-  // Filter the items that do not match item_version or are not available
-  cartItems = cartItems.filter((cartItem) => {
-    if (isItem(cartItem.item) && cartItem._id && cartItem.item._id) {
-      let total: number = cartItem.item.discount
-        ? cartItem.item.discount_price
-        : cartItem.item.price;
-
-      // item_version MUST match
-      if (cartItem.item_version !== cartItem.item.item_version) {
-        excludedClientItems.push(cartItem.item.name);
-        return false;
-      }
-
-      // item MUST be available
-      if (!cartItem.item.available) {
-        excludedClientItems.push(cartItem.item.name);
-        return false;
-      }
-
-      const clientCartItemAttributes: IClientCartItemAttribute[] = [];
-      // Filter out the items that have attributes not available
-      for (const cartAttribute of cartItem.attributes) {
-        if (
-          isItemAttribute(cartAttribute.attribute) &&
-          !cartAttribute.attribute.available
-        ) {
-          excludedClientItems.push(cartItem.item.name);
-          return false;
-        } else if (!isItemAttribute(cartAttribute.attribute)) {
-          excludedClientItems.push(cartItem.item.name);
-          return false;
-        }
-
-        total += cartAttribute.attribute.price * cartAttribute.quantity;
-        clientCartItemAttributes.push({
-          name: cartAttribute.attribute.name,
-          quantity: cartAttribute.quantity,
-        });
-      }
-
-      // Should compute total here
-      total *= cartItem.quantity;
-
-      // Append ClientCartItem
-      clientItems.push({
-        id: cartItem._id.toString(),
-        item_id: cartItem.item._id?.toString(),
-        name: cartItem.item.name,
-        preview_url: cartItem.item.preview_url,
-        attributes: clientCartItemAttributes,
-        quantity: cartItem.quantity,
-        total: total,
-      });
-
-      return true;
-    } else {
-      return false;
-    }
-  });
-
-  return {
-    cartItems: cartItems,
-    clientItems: clientItems,
-    excludedClientItems: excludedClientItems,
-  };
+  // RETURN
+  return { included, excluded };
 };

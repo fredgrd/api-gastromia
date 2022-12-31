@@ -1,6 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { CartItemSchema } from "./cartItemModel";
-import { ICartItemSnapshot } from "./cartSnapshot";
+import { CartItemSnapshotSchema, ICartItemSnapshot } from "./cartSnapshot";
 
 // --------------------------------------------------------------------------
 // Interface / Schema / Model
@@ -17,7 +16,7 @@ const CartSchema = new Schema<ICart>({
     required: true,
   },
   items: {
-    type: [CartItemSchema],
+    type: [CartItemSnapshotSchema],
     required: true,
     default: [],
   },

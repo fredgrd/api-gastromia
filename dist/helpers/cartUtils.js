@@ -1,136 +1,149 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAndPriceCart = exports.validateItemAttributes = exports.mapSnapshotAttributes = void 0;
-const mongoose_1 = require("mongoose");
-const itemModel_1 = require("../models/itemModel");
+exports.validateCartSnapshot = void 0;
 const itemAttributeModel_1 = require("../models/itemAttributeModel");
-// Turn snapshot item attributes into an organized mao
-const mapSnapshotAttributes = (attributes) => {
-    const map = new Map([]);
-    attributes.forEach((attribute) => {
-        const attributeSnapshot = map.get(attribute.group_id);
-        if (attributeSnapshot) {
-            attributeSnapshot.push(attribute);
-            map.set(attribute.group_id, attributeSnapshot);
+// Validate CartSnapshot
+const validateCartSnapshot = (items, snapshotItems) => {
+    // Validate the snapshot
+    //// Validate item existence
+    //// Validate item availability
+    //// Validate item price
+    //// Validate attributes existence
+    //// Validate attributes availability
+    //// Validate attributes prices
+    //// Validate rule
+    const included = [];
+    const excluded = [];
+    for (const snapshotItem of snapshotItems) {
+        if (snapshotItem.quantity <= 0 || snapshotItem.quantity > 99) {
+            continue;
         }
-        else {
-            map.set(attribute.group_id, [attribute]);
+        const item = items.find((e) => { var _a; return ((_a = e._id) === null || _a === void 0 ? void 0 : _a.toString()) === snapshotItem.item_id; });
+        // Edge case
+        //// Item does not exist
+        if (!item) {
+            continue;
         }
-    });
-    return map;
-};
-exports.mapSnapshotAttributes = mapSnapshotAttributes;
-// Validates the item attributes
-/// Returns the a CartAttribute array if validation is passed, otherwise returns null
-const validateItemAttributes = (itemAttributeGroups, operationAttributes) => {
-    const attributesTotByGroup = new Map([]);
-    itemAttributeGroups.forEach((e) => { var _a; return attributesTotByGroup.set(((_a = e._id) === null || _a === void 0 ? void 0 : _a.toString()) || "", 0); });
-    for (const attribute of operationAttributes) {
-        // Check if group exists
-        const group = itemAttributeGroups.find((e) => { var _a; return ((_a = e._id) === null || _a === void 0 ? void 0 : _a.toString()) === attribute.group_id; });
-        if (group === undefined || group._id === undefined) {
-            return null;
-        }
-        // Check if attribute exists in item doc
-        if (group.attributes.findIndex((e) => e._id.toString() === attribute.attribute_id) === -1) {
-            console.log("ValidateItemAttributes error: AttributeDoesNotExist");
-            console.log(`Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`);
-            return null;
-        }
-        // Check if attribute max condition is met
-        if (attribute.quantity > group.rules.attribute_max) {
-            console.log("ValidateItemAttributes error: AttributeBreaksMaxQuantity");
-            console.log(`Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`);
-            return null;
-        }
-        // Check if quantity is zero
-        if (attribute.quantity === 0) {
-            console.log("ValidateItemAttributes error: AttributeZeroQuantity");
-            console.log(`Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`);
-            return null;
-        }
-        // Check if the total + quantity breaks the group max condition
-        const groupTot = attributesTotByGroup.get(group._id.toString());
-        if (groupTot !== undefined &&
-            groupTot + attribute.quantity > group.rules.group_max) {
-            console.log("ValidateItemAttribute error: AttributesBreakGroupMaxQuantity");
-            console.log(`Attribute: ${attribute.attribute_id} Group: ${attribute.group_id}`);
-            return null;
-        }
-        else if (groupTot) {
-            attributesTotByGroup.set(attribute.group_id, groupTot + attribute.quantity);
-        }
-    }
-    // All checks passed
-    return operationAttributes.map((e) => ({
-        group_id: e.group_id,
-        attribute: new mongoose_1.Types.ObjectId(e.attribute_id),
-        quantity: e.quantity,
-    }));
-};
-exports.validateItemAttributes = validateItemAttributes;
-// Updates and prices every item in the cart
-/// Excludes items not available or that contain attributes not available
-const updateAndPriceCart = (cartItems) => {
-    const clientItems = [];
-    const excludedClientItems = [];
-    // Filter the items that do not match item_version or are not available
-    cartItems = cartItems.filter((cartItem) => {
-        var _a;
-        if ((0, itemModel_1.isItem)(cartItem.item) && cartItem._id && cartItem.item._id) {
-            let total = cartItem.item.discount
-                ? cartItem.item.discount_price
-                : cartItem.item.price;
-            // item_version MUST match
-            if (cartItem.item_version !== cartItem.item.item_version) {
-                excludedClientItems.push(cartItem.item.name);
-                return false;
-            }
-            // item MUST be available
-            if (!cartItem.item.available) {
-                excludedClientItems.push(cartItem.item.name);
-                return false;
-            }
-            const clientCartItemAttributes = [];
-            // Filter out the items that have attributes not available
-            for (const cartAttribute of cartItem.attributes) {
-                if ((0, itemAttributeModel_1.isItemAttribute)(cartAttribute.attribute) &&
-                    !cartAttribute.attribute.available) {
-                    excludedClientItems.push(cartItem.item.name);
-                    return false;
-                }
-                else if (!(0, itemAttributeModel_1.isItemAttribute)(cartAttribute.attribute)) {
-                    excludedClientItems.push(cartItem.item.name);
-                    return false;
-                }
-                total += cartAttribute.attribute.price * cartAttribute.quantity;
-                clientCartItemAttributes.push({
-                    name: cartAttribute.attribute.name,
-                    quantity: cartAttribute.quantity,
-                });
-            }
-            // Should compute total here
-            total *= cartItem.quantity;
-            // Append ClientCartItem
-            clientItems.push({
-                id: cartItem._id.toString(),
-                item_id: (_a = cartItem.item._id) === null || _a === void 0 ? void 0 : _a.toString(),
-                name: cartItem.item.name,
-                preview_url: cartItem.item.preview_url,
-                attributes: clientCartItemAttributes,
-                quantity: cartItem.quantity,
-                total: total,
+        // Not available
+        //// Handles item availability changes not reflected in cart
+        if (!item.available) {
+            excluded.push({
+                item: snapshotItem,
+                message: "Prodotto non è disponibile",
             });
-            return true;
+            continue;
         }
-        else {
-            return false;
+        // Price difference
+        //// Handles item price changes not reflected in cart
+        if ((item.discount ? item.discount_price : item.price) !== snapshotItem.price) {
+            excluded.push({
+                item: snapshotItem,
+                message: "Prodotto non aggiornato",
+            });
+            continue;
         }
-    });
-    return {
-        cartItems: cartItems,
-        clientItems: clientItems,
-        excludedClientItems: excludedClientItems,
-    };
+        // Quick add
+        //// If item can be quick-added add to included items
+        if (item.quick_add && !snapshotItem.attributes_snapshot.length) {
+            included.push(snapshotItem);
+            continue;
+        }
+        // Validate attributes
+        let attributesValid = true;
+        const groupTotals = new Map([]);
+        for (const snapshotAttribute of snapshotItem.attributes_snapshot) {
+            if (snapshotAttribute.quantity <= 0 || snapshotAttribute.quantity > 99) {
+                attributesValid = false;
+                break;
+            }
+            const group = item.attribute_groups.find((e) => { var _a; return ((_a = e._id) === null || _a === void 0 ? void 0 : _a.toString()) === snapshotAttribute.group_id; });
+            if (!group) {
+                attributesValid = false;
+                break;
+            }
+            const attributes = group.attributes.flatMap((e) => (0, itemAttributeModel_1.isItemAttribute)(e) ? e : []);
+            const attribute = attributes.find((e) => { var _a; return ((_a = e._id) === null || _a === void 0 ? void 0 : _a.toString()) === snapshotAttribute.attribute_id; });
+            if (!attribute) {
+                attributesValid = false;
+                break;
+            }
+            if (!attribute.available) {
+                excluded.push({
+                    item: snapshotItem,
+                    message: "Una o più aggiunte non disponibili",
+                });
+                attributesValid = false;
+                break;
+            }
+            if (attribute.price !== snapshotAttribute.price) {
+                excluded.push({
+                    item: snapshotItem,
+                    message: "Una o più aggiunte non aggiornate",
+                });
+                attributesValid = false;
+                break;
+            }
+            // VALIDATE ATTRIBUTE RULES
+            // Count group total
+            let groupTotal = groupTotals.get(group._id.toString());
+            if (!groupTotal) {
+                groupTotals.set(group._id.toString(), 0);
+                groupTotal = 0;
+            }
+            if (snapshotAttribute.quantity > group.rules.attribute_max) {
+                // Rules broken
+                attributesValid = false;
+                break;
+            }
+            if (groupTotal + snapshotAttribute.quantity > group.rules.group_max) {
+                // Rules broken
+                attributesValid = false;
+                break;
+            }
+            // Rules not broken
+            groupTotals.set(group._id.toString(), groupTotal + snapshotAttribute.quantity);
+        }
+        // Edge case
+        //// Client was able to brake rules
+        if (!attributesValid) {
+            continue;
+        }
+        // VALIDATE GROUP RULES
+        let conditionsMet = true;
+        for (const group of item.attribute_groups) {
+            if (!group._id) {
+                conditionsMet = false;
+                break;
+            }
+            const groupTotal = groupTotals.get(group._id.toString()); // Group totals
+            //// Was not added to item. Client could not add to cart
+            //// No groupTotal exists meaning attribute not added by user
+            //// Conditions are met because user was not forced to add
+            if (!groupTotal && group.rules.group_min === 0) {
+                break;
+            }
+            if (!groupTotal) {
+                conditionsMet = false;
+                break;
+            }
+            //// Client was able to brake rules
+            if (group.rules.group_min > groupTotal) {
+                conditionsMet = false;
+                break;
+            }
+            //// Client was able to brake rules
+            if (groupTotal > group.rules.group_max) {
+                conditionsMet = false;
+                break;
+            }
+        }
+        if (!conditionsMet) {
+            continue;
+        }
+        // VALIDATION PASSED
+        included.push(snapshotItem);
+    }
+    // RETURN
+    return { included, excluded };
 };
-exports.updateAndPriceCart = updateAndPriceCart;
+exports.validateCartSnapshot = validateCartSnapshot;
