@@ -1,10 +1,6 @@
 import { Types } from "mongoose";
-import { isItem, IItem } from "../models/itemModel";
-import {
-  IItemAttribute,
-  IItemAttributeGroup,
-  isItemAttribute,
-} from "../models/itemAttributeModel";
+import { IItem } from "../models/itemModel";
+import { IItemAttribute, isItemAttribute } from "../models/itemAttributeModel";
 import { ICartItemSnapshot } from "../models/cartSnapshot";
 
 // Validate CartSnapshot
@@ -195,4 +191,20 @@ export const validateCartSnapshot = (
 
   // RETURN
   return { included, excluded };
+};
+
+// Prices the cart snapshot
+//// Should be run after validate cart snapshot
+export const priceCartSnapshot = (items: ICartItemSnapshot[]): number => {
+  const total: number = items.reduce((acc, curr) => {
+    // Price attributes
+    const attributesTotal = curr.attributes_snapshot.reduce(
+      (accTotal, attribute) => accTotal + attribute.price * attribute.quantity,
+      0
+    );
+
+    return acc + (curr.price + attributesTotal) * curr.quantity;
+  }, 0);
+
+  return total;
 };
