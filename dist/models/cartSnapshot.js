@@ -6,8 +6,7 @@ const mongoose_1 = require("mongoose");
 // Helpers
 const isCartSnapshot = (snapshot) => {
     const unsafeCast = snapshot;
-    return (unsafeCast.items_snapshot !== undefined &&
-        unsafeCast.snapshot_version !== undefined);
+    return unsafeCast.items_snapshot !== undefined;
 };
 exports.isCartSnapshot = isCartSnapshot;
 const isCartItemSnapshot = (snapshot) => {

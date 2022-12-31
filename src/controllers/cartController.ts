@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { MongooseError, HydratedDocument, Types, Schema } from "mongoose";
+import { MongooseError, HydratedDocument, Types } from "mongoose";
 import { Cart, ICart } from "../models/cartModel";
 import { IItem, isItem, Item } from "../models/itemModel";
 import { verifyAuthToken } from "../helpers/jwtTokens";
@@ -132,7 +132,10 @@ export const fetchCart = async (req: Request, res: Response) => {
       cart.items
     );
 
-    await cart.updateOne({ items: included });
+    // Some items are no longer valid
+    if (!excluded.length) {
+      await cart.updateOne({ items: included });
+    }
 
     res.status(200).json({ included: included, excluded: excluded });
   } catch (error) {

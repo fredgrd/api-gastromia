@@ -6,10 +6,7 @@ import { Schema, Types } from "mongoose";
 export const isCartSnapshot = (snapshot: any): snapshot is ICartSnapshot => {
   const unsafeCast = snapshot as ICartSnapshot;
 
-  return (
-    unsafeCast.items_snapshot !== undefined &&
-    unsafeCast.snapshot_version !== undefined
-  );
+  return unsafeCast.items_snapshot !== undefined;
 };
 
 export const isCartItemSnapshot = (
@@ -65,7 +62,6 @@ export interface ICartItemSnapshot {
 
 export interface ICartSnapshot {
   items_snapshot: ICartItemSnapshot[];
-  snapshot_version: string; // Should update the cart with this value
 }
 
 // --------------------------------------------------------------------------
