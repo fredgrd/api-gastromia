@@ -48,6 +48,9 @@ export const fetchUser = async (req: Request, res: Response) => {
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(`FetchUser error: ${mongooseError.message}`);
+
+    res.clearCookie("auth_token");
+
     res.sendStatus(500);
   }
 };
