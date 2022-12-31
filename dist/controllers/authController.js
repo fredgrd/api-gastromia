@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkVerification = exports.startVerification = void 0;
+exports.completeVerification = exports.startVerification = void 0;
 const twilioService_1 = require("../services/twilioService");
 const userModel_1 = require("../models/userModel");
 const jwtTokens_1 = require("../helpers/jwtTokens");
@@ -42,7 +42,7 @@ const startVerification = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.startVerification = startVerification;
-const checkVerification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const number = req.body.number;
     const code = req.body.code;
     const twilioService = new twilioService_1.TwilioService();
@@ -93,4 +93,4 @@ const checkVerification = (req, res) => __awaiter(void 0, void 0, void 0, functi
             break;
     }
 });
-exports.checkVerification = checkVerification;
+exports.completeVerification = completeVerification;

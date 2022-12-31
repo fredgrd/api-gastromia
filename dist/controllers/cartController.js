@@ -68,7 +68,9 @@ const updateSnapshot = (req, res) => __awaiter(void 0, void 0, void 0, function*
             });
         }
         else {
-            res.status(200).json({ update_snapshot: false });
+            res
+                .status(200)
+                .json({ update_snapshot: false, included: [], excluded: [] });
         }
     }
     catch (error) {
@@ -115,7 +117,9 @@ const fetchCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!excluded.length) {
             yield cart.updateOne({ items: included });
         }
-        res.status(200).json({ included: included, excluded: excluded });
+        res
+            .status(200)
+            .json({ update_snapshot: true, included: included, excluded: excluded });
     }
     catch (error) {
         const mongooseError = error;

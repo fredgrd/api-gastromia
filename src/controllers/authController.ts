@@ -37,7 +37,7 @@ export const startVerification = async (req: Request, res: Response) => {
   }
 };
 
-export const checkVerification = async (req: Request, res: Response) => {
+export const completeVerification = async (req: Request, res: Response) => {
   const number = req.body.number;
   const code = req.body.code;
   const twilioService = new TwilioService();

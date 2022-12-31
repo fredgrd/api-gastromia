@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.fetchUser = void 0;
+const uuid_1 = require("uuid");
 const userModel_1 = require("../models/userModel");
 const stripeService_1 = __importDefault(require("../services/stripeService"));
 const jwtTokens_1 = require("../helpers/jwtTokens");
@@ -76,7 +77,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             stripe_id: "awaiting",
             number: signupToken.number,
             name: name,
-            email: "noemail",
+            email: `unknown-${(0, uuid_1.v4)()}`,
         });
         const customerId = yield stripeService.createCustomer(user.id);
         if (customerId) {
@@ -93,6 +94,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 httpOnly: true,
                 secure: true,
             });
+            res.clearCookie("signup_token");
             res.status(200).json(user);
         }
         else {

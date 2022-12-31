@@ -1,13 +1,13 @@
 import { Router } from "express";
 import {
   startVerification,
-  checkVerification,
+  completeVerification,
 } from "../controllers/authController";
 
 const router = Router();
 
 router.post("/start", startVerification);
 
-router.post("/checkcode", checkVerification);
+router.post("/complete", completeVerification);
 
 export { router as authRouter };

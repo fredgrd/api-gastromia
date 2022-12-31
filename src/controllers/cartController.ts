@@ -77,7 +77,9 @@ export const updateSnapshot = async (req: Request, res: Response) => {
         excluded: excluded,
       });
     } else {
-      res.status(200).json({ update_snapshot: false });
+      res
+        .status(200)
+        .json({ update_snapshot: false, included: [], excluded: [] });
     }
   } catch (error) {
     console.log(error);
@@ -137,7 +139,9 @@ export const fetchCart = async (req: Request, res: Response) => {
       await cart.updateOne({ items: included });
     }
 
-    res.status(200).json({ included: included, excluded: excluded });
+    res
+      .status(200)
+      .json({ update_snapshot: true, included: included, excluded: excluded });
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(`FetchCart error: ${mongooseError.name}`);

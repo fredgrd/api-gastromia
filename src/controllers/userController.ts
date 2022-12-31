@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 import { MongooseError } from "mongoose";
 import { User } from "../models/userModel";
 import StripeService from "../services/stripeService";
@@ -77,7 +78,7 @@ export const createUser = async (req: Request, res: Response) => {
       stripe_id: "awaiting",
       number: signupToken.number,
       name: name,
-      email: "noemail",
+      email: `unknown-${uuidv4()}`,
     });
 
     const customerId = await stripeService.createCustomer(user.id);
@@ -97,6 +98,8 @@ export const createUser = async (req: Request, res: Response) => {
         httpOnly: true,
         secure: true,
       });
+
+      res.clearCookie("signup_token");
 
       res.status(200).json(user);
     } else {
