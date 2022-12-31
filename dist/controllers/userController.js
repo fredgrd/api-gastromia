@@ -8,68 +8,102 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = exports.fetchUser = void 0;
-const userService_1 = require("../services/userService");
+const userModel_1 = require("../models/userModel");
+const stripeService_1 = __importDefault(require("../services/stripeService"));
+const jwtTokens_1 = require("../helpers/jwtTokens");
+// Fetches the user from a valid AuthToken
+/// Returns both the User object and an updated AuthToken
 const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Call", Date.now());
-    const token = req.cookies.token;
-    const userService = new userService_1.UserService();
-    console.log("HAS TOKEN?", token);
-    if (!token) {
-        res.sendStatus(400);
+    const token = req.cookies.auth_token;
+    if (!token || typeof token !== "string") {
+        console.log("FetchUser error: MissingToken");
+        res.sendStatus(403);
         return;
     }
     // Verify token
-    const userNumber = userService.verifyToken(token || "");
-    const foundUser = yield userService.fetchUser(userNumber || "");
-    if (foundUser) {
-        const token = userService.signToken(userNumber !== null && userNumber !== void 0 ? userNumber : "");
-        res.cookie("token", token, {
+    const authtoken = (0, jwtTokens_1.verifyAuthToken)(token);
+    if (!authtoken) {
+        console.log("FetchUser error: NotAuthToken");
+        res.sendStatus(403);
+        return;
+    }
+    try {
+        const user = yield userModel_1.User.findById(authtoken.id).orFail();
+        // Update the AuthToken
+        const token = (0, jwtTokens_1.signAuthToken)({
+            id: user.id,
+            stripe_id: user.stripe_id,
+            number: user.number,
+        });
+        res.cookie("auth_token", token, {
             maxAge: 60 * 60 * 24 * 10 * 1000,
             httpOnly: true,
             secure: true,
         });
-        res.status(200).json({
-            id: foundUser._id,
-            name: foundUser.name,
-            number: foundUser.number,
-        });
+        res.status(200).json(user);
     }
-    else {
-        console.log(`Could not find users for: ${userNumber}`);
-        res.sendStatus(400);
+    catch (error) {
+        const mongooseError = error;
+        console.log(`FetchUser error: ${mongooseError.message}`);
     }
 });
 exports.fetchUser = fetchUser;
+// Creates a user from a valid signup token
+/// Returns both the User object and an AuthToken
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.token;
+    const token = req.cookies.signup_token;
     const name = req.body.name;
-    const userService = new userService_1.UserService();
-    if (!token) {
-        res.sendStatus(400);
+    const stripeService = new stripeService_1.default();
+    if (!token || typeof token !== "string") {
+        console.log("CreateUser error: MissingToken");
+        res.sendStatus(403);
         return;
     }
     // Verify token
-    const userNumber = userService.verifyToken(token || "");
-    const foundUser = yield userService.fetchUser(userNumber || "");
-    if (userNumber && !foundUser) {
-        const newUser = yield userService.createUser({
-            number: userNumber,
+    const signupToken = (0, jwtTokens_1.verifySignupToken)(token);
+    if (!signupToken) {
+        console.log("CreateUser error: NotSignupToken");
+        res.sendStatus(403);
+        return;
+    }
+    try {
+        const user = yield userModel_1.User.create({
+            stripe_id: "awaiting",
+            number: signupToken.number,
             name: name,
+            email: "noemail",
         });
-        if (newUser) {
-            res.status(200).json({
-                id: newUser._id,
-                name: newUser.name,
-                number: newUser.number,
+        const customerId = yield stripeService.createCustomer(user.id);
+        if (customerId) {
+            user.stripe_id = customerId;
+            yield user.save();
+            // Set cookie
+            const token = (0, jwtTokens_1.signAuthToken)({
+                id: user.id,
+                stripe_id: user.stripe_id,
+                number: user.number,
             });
+            res.cookie("auth_token", token, {
+                maxAge: 60 * 60 * 24 * 10 * 1000,
+                httpOnly: true,
+                secure: true,
+            });
+            res.status(200).json(user);
         }
         else {
-            res.sendStatus(400);
+            user.delete();
+            console.log("CreateUser error: StripeCustomerError");
+            res.sendStatus(500);
         }
     }
-    else {
+    catch (error) {
+        const mongooseError = error;
+        console.log(`CreateUser error: ${mongooseError.message}`);
         res.sendStatus(400);
     }
 });

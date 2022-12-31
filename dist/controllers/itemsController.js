@@ -47,6 +47,8 @@ const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createItem = createItem;
+// Update an Item Document
+/// If the object provided does not conform to the ItemSchema no changes will be applied
 const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const itemId = req.body.item_id;
     const update = req.body.update;
@@ -82,6 +84,7 @@ const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.updateItem = updateItem;
+// TODO: Review
 const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.query.k;
     const searchId = req.query.search_id;
@@ -119,6 +122,7 @@ const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.searchItems = searchItems;
+// TODO: Review
 const fetchCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cQuery = req.query.c;
     try {
@@ -130,6 +134,7 @@ const fetchCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.fetchCategory = fetchCategory;
+// TODO: Review
 const fetchItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const iQuery = req.query.i;
     console.log("Querying item", iQuery);

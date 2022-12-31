@@ -35,6 +35,9 @@ export const isItemAttributeGroup = (
   );
 };
 
+// --------------------------------------------------------------------------
+// Interface / Schema / Model
+
 export interface IItemAttribute {
   _id?: Types.ObjectId;
   name: string;
@@ -109,7 +112,7 @@ export interface IItemAttributeGroup {
   rules: IItemAttributeGroupRules;
   name: string;
   description: string;
-  attributes: Types.ObjectId[];
+  attributes: Types.ObjectId[] | IItemAttribute[];
 }
 
 export const ItemAttributeGroupSchema = new Schema<IItemAttributeGroup>({

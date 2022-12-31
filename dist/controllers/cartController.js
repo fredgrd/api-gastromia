@@ -9,154 +9,110 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchCart = exports.updateCart = void 0;
-const cartService_1 = require("../services/cartService");
+exports.fetchCart = exports.updateSnapshot = void 0;
+const mongoose_1 = require("mongoose");
 const cartModel_1 = require("../models/cartModel");
 const itemModel_1 = require("../models/itemModel");
-const cartOperations_1 = require("../models/cartOperations");
-const itemAttributeModel_1 = require("../models/itemAttributeModel");
-const isOperation = (operation) => {
-    const unsafeCast = operation;
-    return (unsafeCast.type !== undefined &&
-        unsafeCast.quantity !== undefined &&
-        (unsafeCast.cart_item_id !== undefined || unsafeCast.item_id !== undefined));
-};
-const updateCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // Retrieve user id from token
-    if (req.body || isOperation(req.body)) {
-        var operation = req.body;
-    }
-    else {
-        console.log("UpdateCart error: OperationBadlyFormatted");
-        res.sendStatus(400);
+const jwtTokens_1 = require("../helpers/jwtTokens");
+const cartUtils_1 = require("../helpers/cartUtils");
+const cartSnapshot_1 = require("../models/cartSnapshot");
+// --------------------------------------------------------------------------
+// Cart
+// Update with cart snapshot
+//// If the cart is updated returns the client the items to put in the cart along with a excluded array
+//// If the excluded array is empty, but snapshot was updated it means that user provided an illegitimate snapshot
+const updateSnapshot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.cookies.auth_token;
+    if (!token || typeof token !== "string") {
+        console.log("UpdateCart error: MissingToken");
+        res.status(403).send("MissingToken");
         return;
     }
-    // Retrieve the user's cart or create a new one
+    // Verify token
+    const authtoken = (0, jwtTokens_1.verifyAuthToken)(token);
+    if (!authtoken) {
+        console.log("UpdateCart error: NotAuthToken");
+        res.status(403).send("NotAuthToken");
+        return;
+    }
+    // Receive a snapshot
+    const snapshot = req.body;
+    if (!snapshot) {
+        console.log("UpdateSnapshot error: NoObjectProvided");
+        res.status(403).send("NoObjectProvided");
+        return;
+    }
+    if (!(0, cartSnapshot_1.isCartSnapshot)(snapshot)) {
+        console.log("UpdateSnapshot error: NoSnapshotProvided");
+        res.status(403).send("NoSnapshotProvided");
+        return;
+    }
+    // START VALIDATION
     try {
-        let cart = yield cartModel_1.Cart.findOne({
-            owner_id: operation.owner_id,
-        });
-        if (!cart) {
-            // Create a cart for the user
-            cart = new cartModel_1.Cart({ owner_id: operation.owner_id, items: [] });
-            yield cart.save();
+        const items = yield itemModel_1.Item.find({
+            _id: {
+                $in: [
+                    ...new Set(snapshot.items_snapshot.map((e) => new mongoose_1.Types.ObjectId(e.item_id))),
+                ],
+            },
+        }).populate("attribute_groups.attributes");
+        const castedItems = items.filter((e) => (0, itemModel_1.isItem)(e));
+        const { included, excluded } = (0, cartUtils_1.validateCartSnapshot)(castedItems, snapshot.items_snapshot);
+        // Update the cart
+        yield cartModel_1.Cart.findOneAndUpdate({ owner_id: authtoken.id }, { items: included });
+        if (included.length !== snapshot.items_snapshot.length) {
+            res.status(200).json({
+                update_snapshot: true,
+                included: included,
+                excluded: excluded,
+            });
         }
-        // Add a new item to the cart
-        if (operation.type === cartOperations_1.CartOperationType.Add &&
-            operation.item_id &&
-            operation.attributes) {
-            const validatedAddition = yield (0, cartService_1.validateItemAddition)(operation.item_id, operation.attributes, operation.quantity);
-            if (cart && validatedAddition) {
-                // Add to cart
-                cart.items.push(Object.assign({}, validatedAddition));
-                yield cart.save();
-                res.sendStatus(200); // SEND UPDATED CART?
-            }
-            else {
-                console.log(`UpdateCart error: AdditionNotValidated`);
-                res.sendStatus(400);
-            }
-        }
-        if (operation.type === cartOperations_1.CartOperationType.Modify && operation.cart_item_id) {
-            const cartItemIndex = cart.items.findIndex((e) => { var _a; return ((_a = e._id) === null || _a === void 0 ? void 0 : _a.toString()) === operation.cart_item_id; });
-            if (cart && cartItemIndex !== -1 && operation.quantity > 0) {
-                cart.items[cartItemIndex].quantity = operation.quantity;
-                yield cart.save();
-                res.sendStatus(200); // SEND UPDATED CART?
-            }
-            else if (cart && cartItemIndex !== -1) {
-                cart.items.splice(cartItemIndex, 1);
-                yield cart.save();
-                res.sendStatus(200);
-            }
-            else {
-                console.log("UpdateCart error: Modify/NoCartItem");
-                res.sendStatus(400);
-            }
+        else {
+            res.status(200).json({ update_snapshot: false });
         }
     }
     catch (error) {
-        const mongooseError = error;
-        console.log(`UpdateCart error: ${mongooseError.name}`);
+        console.log(error);
         res.sendStatus(500);
+        return;
     }
 });
-exports.updateCart = updateCart;
+exports.updateSnapshot = updateSnapshot;
+// Fetches the cart and returns the CartItem w/ respective prices
+/// Updates the cart document to reflect changes in availability
 const fetchCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const owner_id = req.body.owner_id;
-    if (!owner_id) {
-        console.log("FetchCart error: NoOwner");
-        res.sendStatus(400);
+    const token = req.cookies.auth_token;
+    if (!token || typeof token !== "string") {
+        console.log("FetchCart error: MissingToken");
+        res.status(403).send("MissingToken");
+        return;
+    }
+    // Verify token
+    const authtoken = (0, jwtTokens_1.verifyAuthToken)(token);
+    if (!authtoken) {
+        console.log("FetchCart error: NotAuthToken");
+        res.status(403).send("NotAuthToken");
         return;
     }
     try {
-        const cart = yield cartModel_1.Cart.findOne({ owner_id: owner_id })
-            .populate("items.item")
-            .populate("items.attributes.attribute")
-            .orFail();
-        const clientCartItems = [];
-        const clientCartItemExcluded = [];
-        // Filter the items that do not match item_version or are not available
-        let cartItems = cart.items.filter((cartItem) => {
-            var _a;
-            if ((0, itemModel_1.isItem)(cartItem.item) && cartItem._id && cartItem.item._id) {
-                let total = cartItem.item.discount
-                    ? cartItem.item.discount_price
-                    : cartItem.item.price;
-                // item_version MUST match
-                if (cartItem.item_version !== cartItem.item.item_version) {
-                    clientCartItemExcluded.push(cartItem.item.name);
-                    return false;
-                }
-                // item MUST be available
-                if (!cartItem.item.available) {
-                    clientCartItemExcluded.push(cartItem.item.name);
-                    return false;
-                }
-                const clientCartItemAttributes = [];
-                // Filter out the items that have attributes not available
-                for (const cartAttribute of cartItem.attributes) {
-                    if ((0, itemAttributeModel_1.isItemAttribute)(cartAttribute.attribute) &&
-                        !cartAttribute.attribute.available) {
-                        clientCartItemExcluded.push(cartItem.item.name);
-                        return false;
-                    }
-                    else if (!(0, itemAttributeModel_1.isItemAttribute)(cartAttribute.attribute)) {
-                        clientCartItemExcluded.push(cartItem.item.name);
-                        return false;
-                    }
-                    total += cartAttribute.attribute.price * cartAttribute.quantity;
-                    clientCartItemAttributes.push({
-                        name: cartAttribute.attribute.name,
-                        quantity: cartAttribute.quantity,
-                    });
-                }
-                // Should compute total here
-                total *= cartItem.quantity;
-                // Append ClientCartItem
-                clientCartItems.push({
-                    id: cartItem._id.toString(),
-                    item_id: (_a = cartItem.item._id) === null || _a === void 0 ? void 0 : _a.toString(),
-                    name: cartItem.item.name,
-                    preview_url: cartItem.item.preview_url,
-                    attributes: clientCartItemAttributes,
-                    quantity: cartItem.quantity,
-                    total: total,
-                });
-                return true;
-            }
-            else {
-                return false;
-            }
+        let cart = yield cartModel_1.Cart.findOne({
+            owner_id: authtoken.id,
         });
-        // Update the cart if items were filtered out
-        if (cart.items.length !== cartItems.length) {
-            cart.items = cartItems;
-            cart.save(); // Don't need to wait for operation to complete
+        if (!cart) {
+            // Create a cart for the user
+            cart = new cartModel_1.Cart({ owner_id: authtoken.id, items: [] });
+            yield cart.save();
         }
-        res
-            .status(200)
-            .json({ items: clientCartItems, excluded: clientCartItemExcluded });
+        // Cart must be validated
+        const items = yield itemModel_1.Item.find({
+            _id: {
+                $in: [...new Set(cart.items.map((e) => new mongoose_1.Types.ObjectId(e.item_id)))],
+            },
+        }).populate("attribute_groups.attributes");
+        const castedItems = items.filter((e) => (0, itemModel_1.isItem)(e));
+        const { included, excluded } = (0, cartUtils_1.validateCartSnapshot)(castedItems, cart.items);
+        yield cart.updateOne({ items: included });
+        res.status(200).json({ included: included, excluded: excluded });
     }
     catch (error) {
         const mongooseError = error;

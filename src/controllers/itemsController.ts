@@ -36,6 +36,8 @@ export const createItem = async (req: Request, res: Response) => {
   }
 };
 
+// Update an Item Document
+/// If the object provided does not conform to the ItemSchema no changes will be applied
 export const updateItem = async (req: Request, res: Response) => {
   const itemId = req.body.item_id;
   const update = req.body.update;
@@ -76,6 +78,7 @@ export const updateItem = async (req: Request, res: Response) => {
   }
 };
 
+// TODO: Review
 export const searchItems = async (req: Request, res: Response) => {
   const query = req.query.k;
   const searchId = req.query.search_id;
@@ -114,6 +117,7 @@ export const searchItems = async (req: Request, res: Response) => {
   }
 };
 
+// TODO: Review
 export const fetchCategory = async (req: Request, res: Response) => {
   const cQuery = req.query.c;
 
@@ -126,6 +130,7 @@ export const fetchCategory = async (req: Request, res: Response) => {
   }
 };
 
+// TODO: Review
 export const fetchItem = async (req: Request, res: Response) => {
   const iQuery = req.query.i;
 

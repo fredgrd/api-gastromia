@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import axios from "axios";
 import { LoggerService } from "../services/loggerService";
 import { WhatsappMessage, FacebookService } from "../services/facebookService";
 

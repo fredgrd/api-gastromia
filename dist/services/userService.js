@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const authModel_1 = require("../models/authModel");
 const userModel_1 = require("../models/userModel");
 class UserService {
     constructor() {
@@ -21,9 +22,47 @@ class UserService {
     }
     signToken(number) {
         const token = jsonwebtoken_1.default.sign({ number: number }, this.jwtSecret, {
-            expiresIn: "365d",
+            expiresIn: "365d", // Sign for less
         });
         return token;
+    }
+    signSignupToken(number) {
+        const token = jsonwebtoken_1.default.sign({ number: number }, this.jwtSecret, {
+            expiresIn: "10m",
+        });
+        return token;
+    }
+    verifySignupToken(token) {
+        try {
+            const decoded = jsonwebtoken_1.default.verify(token, this.jwtSecret);
+            if ((0, authModel_1.isSignupToken)(decoded)) {
+                return decoded;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (error) {
+            console.log(`VerifySignupToken error: ${error}`);
+            return null;
+        }
+    }
+    signAuthToken(number) {
+        const token = jsonwebtoken_1.default.sign({ number: number }, this.jwtSecret, {
+            expiresIn: "10d",
+        });
+        return token;
+    }
+    verifyAuthToken(token) {
+        try {
+            const decoded = jsonwebtoken_1.default.verify(token, this.jwtSecret);
+            console.log(decoded);
+            return null;
+        }
+        catch (error) {
+            console.log(`VerifyAuthToken error: ${error}`);
+            return null;
+        }
     }
     verifyToken(token) {
         try {
@@ -50,14 +89,13 @@ class UserService {
     createUser(attr) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = userModel_1.User.build(attr);
-                yield user.save();
-                console.log("CREATED");
+                const user = yield userModel_1.User.create(attr);
                 return user;
             }
             catch (error) {
-                console.log(`CreateUser error: ${error}`);
-                return;
+                const mongooseError = error;
+                console.log(`CreateUser error: ${mongooseError.name}`);
+                return null;
             }
         });
     }
