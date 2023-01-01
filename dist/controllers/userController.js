@@ -51,6 +51,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         const mongooseError = error;
         console.log(`FetchUser error: ${mongooseError.message}`);
+        res.clearCookie("auth_token");
         res.sendStatus(500);
     }
 });

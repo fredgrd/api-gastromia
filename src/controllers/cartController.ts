@@ -135,7 +135,7 @@ export const fetchCart = async (req: Request, res: Response) => {
     );
 
     // Some items are no longer valid
-    if (!excluded.length) {
+    if (excluded.length) {
       await cart.updateOne({ items: included });
     }
 
