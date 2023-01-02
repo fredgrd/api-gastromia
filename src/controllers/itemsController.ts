@@ -84,32 +84,25 @@ export const searchItems = async (req: Request, res: Response) => {
   const searchId = req.query.search_id;
 
   try {
-    const items = await Item.aggregate()
-      .search({
-        index: "ItemSearch",
-        compound: {
-          should: [
-            {
-              autocomplete: {
-                query: query,
-                path: "name",
-              },
+    const items = await Item.aggregate().search({
+      index: "ItemSearch",
+      compound: {
+        should: [
+          {
+            autocomplete: {
+              query: query,
+              path: "name",
             },
-            {
-              autocomplete: {
-                query: query,
-                path: "tags",
-              },
+          },
+          {
+            autocomplete: {
+              query: query,
+              path: "tags",
             },
-          ],
-        },
-      })
-      .addFields({
-        id: "$_id",
-      })
-      .project({
-        _id: 0,
-      });
+          },
+        ],
+      },
+    });
 
     res.status(200).json({ items: items });
   } catch (error) {

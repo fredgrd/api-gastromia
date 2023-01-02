@@ -89,8 +89,7 @@ const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const query = req.query.k;
     const searchId = req.query.search_id;
     try {
-        const items = yield itemModel_1.Item.aggregate()
-            .search({
+        const items = yield itemModel_1.Item.aggregate().search({
             index: "ItemSearch",
             compound: {
                 should: [
@@ -108,14 +107,8 @@ const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     },
                 ],
             },
-        })
-            .addFields({
-            id: "$_id",
-        })
-            .project({
-            _id: 0,
         });
-        res.status(200).json(items);
+        res.status(200).json({ items: items });
     }
     catch (error) {
         res.sendStatus(400);
