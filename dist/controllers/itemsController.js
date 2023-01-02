@@ -127,7 +127,7 @@ const fetchCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const cQuery = req.query.c;
     try {
         const items = yield itemModel_1.Item.find({ category: { $eq: cQuery } });
-        res.status(200).json(items);
+        res.status(200).json({ items: items });
     }
     catch (error) {
         res.sendStatus(400);

@@ -111,7 +111,7 @@ export const searchItems = async (req: Request, res: Response) => {
         _id: 0,
       });
 
-    res.status(200).json(items);
+    res.status(200).json({ items: items });
   } catch (error) {
     res.sendStatus(400);
   }
@@ -124,7 +124,7 @@ export const fetchCategory = async (req: Request, res: Response) => {
   try {
     const items = await Item.find({ category: { $eq: cQuery } });
 
-    res.status(200).json(items);
+    res.status(200).json({ items: items });
   } catch (error) {
     res.sendStatus(400);
   }

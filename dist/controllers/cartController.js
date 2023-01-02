@@ -114,7 +114,7 @@ const fetchCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const castedItems = items.filter((e) => (0, itemModel_1.isItem)(e));
         const { included, excluded } = (0, cartUtils_1.validateCartSnapshot)(castedItems, cart.items);
         // Some items are no longer valid
-        if (!excluded.length) {
+        if (excluded.length) {
             yield cart.updateOne({ items: included });
         }
         res
