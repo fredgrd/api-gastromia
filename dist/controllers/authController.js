@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.completeVerification = exports.startVerification = void 0;
+exports.logout = exports.completeVerification = exports.startVerification = void 0;
 const twilioService_1 = require("../services/twilioService");
 const userModel_1 = require("../models/userModel");
 const jwtTokens_1 = require("../helpers/jwtTokens");
@@ -94,3 +94,8 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.completeVerification = completeVerification;
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.clearCookie("signup_token");
+    res.sendStatus(200);
+});
+exports.logout = logout;

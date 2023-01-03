@@ -29,7 +29,7 @@ const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.sendStatus(403); // Forbidden
         return;
     }
-    if (item && (0, itemModel_1.isItem)(item)) {
+    if (item) {
         try {
             const newItem = new itemModel_1.Item(Object.assign({}, item));
             yield newItem.save();

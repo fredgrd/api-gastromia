@@ -7,3 +7,4 @@ const router = (0, express_1.Router)();
 exports.authRouter = router;
 router.post("/start", authController_1.startVerification);
 router.post("/complete", authController_1.completeVerification);
+router.get("/logout", authController_1.logout);
