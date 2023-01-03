@@ -95,7 +95,7 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.completeVerification = completeVerification;
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("signup_token");
+    res.clearCookie("auth_token");
     res.sendStatus(200);
 });
 exports.logout = logout;

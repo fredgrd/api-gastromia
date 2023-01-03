@@ -95,6 +95,6 @@ export const completeVerification = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("signup_token");
+  res.clearCookie("auth_token");
   res.sendStatus(200);
 };
