@@ -20,7 +20,7 @@ export const createItem = async (req: Request, res: Response) => {
     return;
   }
 
-  if (item && isItem(item)) {
+  if (item) {
     try {
       const newItem = new Item({ ...item });
       await newItem.save();
