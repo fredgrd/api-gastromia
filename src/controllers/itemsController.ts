@@ -135,7 +135,7 @@ export const fetchItem = async (req: Request, res: Response) => {
   }
 
   try {
-    const item = await Item.findById(iQuery).populate("additions.additions");
+    const item = await Item.findById(iQuery).populate("attribute_groups.attributes");
 
     if (item) {
       res.status(200).json(item);

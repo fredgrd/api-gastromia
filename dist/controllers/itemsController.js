@@ -136,7 +136,7 @@ const fetchItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     try {
-        const item = yield itemModel_1.Item.findById(iQuery).populate("additions.additions");
+        const item = yield itemModel_1.Item.findById(iQuery).populate("attribute_groups.attributes");
         if (item) {
             res.status(200).json(item);
         }

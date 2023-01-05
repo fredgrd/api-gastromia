@@ -117,9 +117,11 @@ const fetchCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (excluded.length) {
             yield cart.updateOne({ items: included });
         }
-        res
-            .status(200)
-            .json({ update_snapshot: true, included: included, excluded: excluded });
+        res.status(200).json({
+            update_snapshot: true,
+            included: included,
+            excluded: excluded,
+        });
     }
     catch (error) {
         const mongooseError = error;
