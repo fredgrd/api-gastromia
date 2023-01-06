@@ -8,13 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateItemAttribute = exports.createItemAttribute = void 0;
-const databaseService_1 = __importDefault(require("../services/databaseService"));
 const itemAttributeModel_1 = require("../models/itemAttributeModel");
+const jwtTokens_1 = require("../helpers/jwtTokens");
 // --------------------------------------------------------------------------
 // ItemAttribute
 // Create an ItemAttribute Document
@@ -22,8 +19,7 @@ const itemAttributeModel_1 = require("../models/itemAttributeModel");
 const createItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const itemAttribute = req.body.attribute;
     const token = req.body.token;
-    const databaseService = new databaseService_1.default();
-    const decodedToken = databaseService.verifyToken(token);
+    const decodedToken = (0, jwtTokens_1.verifyDatabaseToken)(token);
     if (!decodedToken) {
         console.log("CreateItemAttribute error: OperationTokenNotValid");
         res.sendStatus(403); // Forbidden
@@ -53,8 +49,7 @@ const updateItemAttribute = (req, res) => __awaiter(void 0, void 0, void 0, func
     const attributeId = req.body.attribute_id;
     const update = req.body.update;
     const token = req.body.token;
-    const databaseService = new databaseService_1.default();
-    const decodedToken = databaseService.verifyToken(token);
+    const decodedToken = (0, jwtTokens_1.verifyDatabaseToken)(token);
     if (!decodedToken) {
         console.log("UpdateItemAttribute error: OperationTokenNotValid");
         res.sendStatus(403); // Forbidden

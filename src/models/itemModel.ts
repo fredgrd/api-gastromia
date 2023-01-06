@@ -17,6 +17,8 @@ export const isItem = (item: any): item is IItem => {
     unsafeCast._id !== undefined &&
     unsafeCast.name !== undefined &&
     unsafeCast.description !== undefined &&
+    unsafeCast.details !== undefined &&
+    unsafeCast.ingredients !== undefined &&
     unsafeCast.available !== undefined &&
     unsafeCast.quick_add !== undefined &&
     unsafeCast.price !== undefined &&
@@ -39,6 +41,8 @@ export interface IItem {
   _id?: Types.ObjectId;
   name: string;
   description: string;
+  details: string;
+  ingredients: string;
   available: boolean;
   quick_add: boolean;
   price: number;
@@ -61,6 +65,16 @@ const ItemSchema = new Schema<IItem>({
   description: {
     type: String,
     required: true,
+  },
+  details: {
+    type: String,
+    required: true,
+    default: "",
+  },
+  ingredients: {
+    type: String,
+    required: true,
+    default: "",
   },
   available: {
     type: Boolean,

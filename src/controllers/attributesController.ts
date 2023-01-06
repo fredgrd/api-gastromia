@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
-import DatabaseService from "../services/databaseService";
-import {
-  IItemAttribute,
-  ItemAttribute,
-  isItemAttribute,
-} from "../models/itemAttributeModel";
+import { ItemAttribute, isItemAttribute } from "../models/itemAttributeModel";
+import { verifyDatabaseToken } from "../helpers/jwtTokens";
 
 // --------------------------------------------------------------------------
 // ItemAttribute
@@ -15,8 +11,7 @@ import {
 export const createItemAttribute = async (req: Request, res: Response) => {
   const itemAttribute = req.body.attribute;
   const token = req.body.token;
-  const databaseService = new DatabaseService();
-  const decodedToken = databaseService.verifyToken(token);
+  const decodedToken = verifyDatabaseToken(token);
 
   if (!decodedToken) {
     console.log("CreateItemAttribute error: OperationTokenNotValid");
@@ -46,8 +41,7 @@ export const updateItemAttribute = async (req: Request, res: Response) => {
   const attributeId = req.body.attribute_id;
   const update = req.body.update;
   const token = req.body.token;
-  const databaseService = new DatabaseService();
-  const decodedToken = databaseService.verifyToken(token);
+  const decodedToken = verifyDatabaseToken(token);
 
   if (!decodedToken) {
     console.log("UpdateItemAttribute error: OperationTokenNotValid");

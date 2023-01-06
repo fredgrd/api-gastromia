@@ -8,22 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.updateItem = exports.createItem = void 0;
 const uuid_1 = require("uuid");
 const itemModel_1 = require("../models/itemModel");
-const databaseService_1 = __importDefault(require("../services/databaseService"));
+const jwtTokens_1 = require("../helpers/jwtTokens");
 // --------------------------------------------------------------------------
 // Item
 // Create an Item Document
 /// If the object provided does not conform to the Item interface fails
 const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { token, item } = req.body;
-    const databaseService = new databaseService_1.default();
-    const decodedToken = databaseService.verifyToken(token);
+    const decodedToken = (0, jwtTokens_1.verifyDatabaseToken)(token);
     if (!decodedToken) {
         console.log("CreateItem error: OperationTokenNotValid");
         res.sendStatus(403); // Forbidden
@@ -53,8 +49,7 @@ const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const itemId = req.body.item_id;
     const update = req.body.update;
     const token = req.body.token;
-    const databaseService = new databaseService_1.default();
-    const decodedToken = databaseService.verifyToken(token);
+    const decodedToken = (0, jwtTokens_1.verifyDatabaseToken)(token);
     if (!decodedToken) {
         console.log("UpdateItem error: OperationTokenNotValid");
         res.sendStatus(403); // Forbidden

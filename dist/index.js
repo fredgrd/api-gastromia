@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const database_1 = require("./database");
 const dotenv_1 = __importDefault(require("dotenv"));
+const jwtTokens_1 = require("./helpers/jwtTokens");
 const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
 const webhooks_1 = require("./routes/webhooks");
@@ -50,6 +51,10 @@ app.use("/stripe", stripe_1.stripeRouter);
 app.use("/order", order_1.orderRouter);
 // Whatsapp
 app.use("/webhooks", webhooks_1.webhooksRouter);
+(0, jwtTokens_1.signDatabaseOpsToken)({
+    name: "Federico Giordani",
+    email: "federico@gastromia.com",
+});
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });

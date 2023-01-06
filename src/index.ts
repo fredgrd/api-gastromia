@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieparser from "cookie-parser";
 import { connectDatabase } from "./database";
 import dotenv from "dotenv";
+import { signDatabaseOpsToken } from "./helpers/jwtTokens";
 
 import { authRouter } from "./routes/auth";
 import { userRouter } from "./routes/user";
@@ -62,6 +63,11 @@ app.use("/order", orderRouter);
 
 // Whatsapp
 app.use("/webhooks", webhooksRouter);
+
+signDatabaseOpsToken({
+  name: "Federico Giordani",
+  email: "federico@gastromia.com",
+});
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);

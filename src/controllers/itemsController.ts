@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { Item, isItem } from "../models/itemModel";
-import DatabaseService from "../services/databaseService";
+import { verifyDatabaseToken } from "../helpers/jwtTokens";
 
 // --------------------------------------------------------------------------
 // Item
@@ -11,8 +11,7 @@ import DatabaseService from "../services/databaseService";
 /// If the object provided does not conform to the Item interface fails
 export const createItem = async (req: Request, res: Response) => {
   const { token, item } = req.body;
-  const databaseService = new DatabaseService();
-  const decodedToken = databaseService.verifyToken(token);
+  const decodedToken = verifyDatabaseToken(token);
 
   if (!decodedToken) {
     console.log("CreateItem error: OperationTokenNotValid");
@@ -42,8 +41,7 @@ export const updateItem = async (req: Request, res: Response) => {
   const itemId = req.body.item_id;
   const update = req.body.update;
   const token = req.body.token;
-  const databaseService = new DatabaseService();
-  const decodedToken = databaseService.verifyToken(token);
+  const decodedToken = verifyDatabaseToken(token);
 
   if (!decodedToken) {
     console.log("UpdateItem error: OperationTokenNotValid");
@@ -135,7 +133,9 @@ export const fetchItem = async (req: Request, res: Response) => {
   }
 
   try {
-    const item = await Item.findById(iQuery).populate("attribute_groups.attributes");
+    const item = await Item.findById(iQuery).populate(
+      "attribute_groups.attributes"
+    );
 
     if (item) {
       res.status(200).json(item);

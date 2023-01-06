@@ -13,6 +13,8 @@ const isItem = (item) => {
     return (unsafeCast._id !== undefined &&
         unsafeCast.name !== undefined &&
         unsafeCast.description !== undefined &&
+        unsafeCast.details !== undefined &&
+        unsafeCast.ingredients !== undefined &&
         unsafeCast.available !== undefined &&
         unsafeCast.quick_add !== undefined &&
         unsafeCast.price !== undefined &&
@@ -35,6 +37,16 @@ const ItemSchema = new mongoose_1.Schema({
     description: {
         type: String,
         required: true,
+    },
+    details: {
+        type: String,
+        required: true,
+        default: "",
+    },
+    ingredients: {
+        type: String,
+        required: true,
+        default: "",
     },
     available: {
         type: Boolean,
