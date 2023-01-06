@@ -68,12 +68,10 @@ const ItemSchema = new Schema<IItem>({
   },
   details: {
     type: String,
-    required: true,
     default: "",
   },
   ingredients: {
     type: String,
-    required: true,
     default: "",
   },
   available: {

@@ -51,10 +51,10 @@ app.use("/stripe", stripe_1.stripeRouter);
 app.use("/order", order_1.orderRouter);
 // Whatsapp
 app.use("/webhooks", webhooks_1.webhooksRouter);
-(0, jwtTokens_1.signDatabaseOpsToken)({
+console.log((0, jwtTokens_1.signDatabaseOpsToken)({
     name: "Federico Giordani",
     email: "federico@gastromia.com",
-});
+}));
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });

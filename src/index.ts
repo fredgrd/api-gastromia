@@ -64,10 +64,12 @@ app.use("/order", orderRouter);
 // Whatsapp
 app.use("/webhooks", webhooksRouter);
 
-signDatabaseOpsToken({
-  name: "Federico Giordani",
-  email: "federico@gastromia.com",
-});
+console.log(
+  signDatabaseOpsToken({
+    name: "Federico Giordani",
+    email: "federico@gastromia.com",
+  })
+);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);

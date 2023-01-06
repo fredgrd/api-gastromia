@@ -40,12 +40,10 @@ const ItemSchema = new mongoose_1.Schema({
     },
     details: {
         type: String,
-        required: true,
         default: "",
     },
     ingredients: {
         type: String,
-        required: true,
         default: "",
     },
     available: {
