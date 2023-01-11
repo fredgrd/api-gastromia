@@ -33,5 +33,19 @@ class StripeService {
             }
         });
     }
+    setupIntent(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const intent = yield this.stripe.setupIntents.create({
+                    customer: id,
+                });
+                return intent.client_secret;
+            }
+            catch (error) {
+                console.log(`SetupIntent error: ${error}`);
+                return null;
+            }
+        });
+    }
 }
 exports.default = StripeService;

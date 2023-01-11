@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { ICard } from "../models/cardModel";
 
 class StripeService {
   private readonly stripeKey: string;
@@ -34,6 +35,32 @@ class StripeService {
     } catch (error) {
       console.log(`SetupIntent error: ${error}`);
       return null;
+    }
+  }
+
+  async paymentMethods(id: string): Promise<ICard[]> {
+    try {
+      const methods = await this.stripe.paymentMethods.list({
+        customer: id,
+        type: "card",
+      });
+
+      const filteredMethods = methods.data.filter(
+        (method) => method.card !== undefined
+      );
+
+      const mappedMethods: ICard[] = filteredMethods.map((method) => ({
+        id: method.id,
+        brand: method.card!.brand,
+        last4: method.card!.last4,
+        exp_month: method.card!.exp_month,
+        exp_year: method.card!.exp_year,
+      }));
+
+      return mappedMethods;
+    } catch (error) {
+      console.log(`PaymentMethods error: ${error}`);
+      return [];
     }
   }
 }
