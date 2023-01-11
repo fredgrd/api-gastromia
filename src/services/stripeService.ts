@@ -24,6 +24,18 @@ class StripeService {
       return null;
     }
   }
+
+  async setupIntent(id: string): Promise<string | null> {
+    try {
+      const intent: Stripe.SetupIntent = await this.stripe.setupIntents.create({
+        customer: id,
+      });
+      return intent.client_secret;
+    } catch (error) {
+      console.log(`SetupIntent error: ${error}`);
+      return null;
+    }
+  }
 }
 
 export default StripeService;

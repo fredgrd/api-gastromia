@@ -11,7 +11,7 @@ import { userRouter } from "./routes/user";
 import { webhooksRouter } from "./routes/webhooks";
 import { itemsRouter } from "./routes/items";
 import { cartRouter } from "./routes/cart";
-import { stripeRouter } from "./routes/stripe";
+import { paymentRouter } from "./routes/payment";
 import { orderRouter } from "./routes/order";
 
 dotenv.config();
@@ -55,8 +55,8 @@ app.use("/items", itemsRouter);
 // Cart routes
 app.use("/cart", cartRouter);
 
-// Stripe routes
-app.use("/stripe", stripeRouter);
+// Payment routes
+app.use("/payment", paymentRouter);
 
 // Order routes
 app.use("/order", orderRouter);
