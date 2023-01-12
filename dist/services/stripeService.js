@@ -47,5 +47,61 @@ class StripeService {
             }
         });
     }
+    paymentIntent(id, amount) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const intent = yield this.stripe.paymentIntents.create({
+                    customer: id,
+                    amount: amount / 10,
+                    currency: "eur",
+                });
+                if (intent.client_secret) {
+                    return { secret: intent.client_secret, id: intent.id };
+                }
+                else {
+                    return null;
+                }
+            }
+            catch (error) {
+                console.log(`PaymentIntent error: ${error}`);
+                return null;
+            }
+        });
+    }
+    paymentMethods(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const methods = yield this.stripe.paymentMethods.list({
+                    customer: id,
+                    type: "card",
+                });
+                const filteredMethods = methods.data.filter((method) => method.card !== undefined);
+                const mappedMethods = filteredMethods.map((method) => ({
+                    id: method.id,
+                    brand: method.card.brand,
+                    last4: method.card.last4,
+                    exp_month: method.card.exp_month,
+                    exp_year: method.card.exp_year,
+                }));
+                return mappedMethods;
+            }
+            catch (error) {
+                console.log(`PaymentMethods error: ${error}`);
+                return [];
+            }
+        });
+    }
+    fetchPaymentIntent(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const intent = yield this.stripe.paymentIntents.retrieve(id);
+                return intent;
+            }
+            catch (error) {
+                console.log(`FetchPaymentMethod error: ${error}`);
+                return null;
+            }
+        });
+    }
 }
 exports.default = StripeService;

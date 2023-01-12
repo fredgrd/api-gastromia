@@ -9,6 +9,20 @@ export const isCartSnapshot = (snapshot: any): snapshot is ICartSnapshot => {
   return unsafeCast.items_snapshot !== undefined;
 };
 
+export const areCartItemSnapshot = (
+  items: any[]
+): items is ICartItemSnapshot[] => {
+  const areItemSnapshots = items.reduce((acc, curr) => {
+    if (isCartItemSnapshot(curr)) {
+      return acc * 1;
+    } else {
+      return acc * 0;
+    }
+  }, 1);
+
+  return areItemSnapshots === 1;
+};
+
 export const isCartItemSnapshot = (
   snapshot: any
 ): snapshot is ICartItemSnapshot => {

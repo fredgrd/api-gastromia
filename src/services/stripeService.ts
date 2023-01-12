@@ -38,6 +38,29 @@ class StripeService {
     }
   }
 
+  async paymentIntent(
+    id: string,
+    amount: number
+  ): Promise<{ secret: string; id: string } | null> {
+    try {
+      const intent: Stripe.PaymentIntent =
+        await this.stripe.paymentIntents.create({
+          customer: id,
+          amount: amount / 10,
+          currency: "eur",
+        });
+
+      if (intent.client_secret) {
+        return { secret: intent.client_secret, id: intent.id };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.log(`PaymentIntent error: ${error}`);
+      return null;
+    }
+  }
+
   async paymentMethods(id: string): Promise<ICard[]> {
     try {
       const methods = await this.stripe.paymentMethods.list({
@@ -61,6 +84,16 @@ class StripeService {
     } catch (error) {
       console.log(`PaymentMethods error: ${error}`);
       return [];
+    }
+  }
+
+  async fetchPaymentIntent(id: string): Promise<Stripe.PaymentIntent | null> {
+    try {
+      const intent = await this.stripe.paymentIntents.retrieve(id);
+      return intent;
+    } catch (error) {
+      console.log(`FetchPaymentMethod error: ${error}`);
+      return null;
     }
   }
 }
