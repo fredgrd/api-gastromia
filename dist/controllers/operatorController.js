@@ -40,7 +40,6 @@ const loginOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 maxAge: 60 * 60 * 24 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
-                sameSite: "none",
                 domain: "gastromia.com",
             });
             res.status(200).json({
