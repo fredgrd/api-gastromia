@@ -4,13 +4,19 @@ import cors from "cors";
 import cookieparser from "cookie-parser";
 import { connectDatabase } from "./database";
 import dotenv from "dotenv";
+// import { signDatabaseOpsToken } from "./helpers/jwtTokens";
 
 import { authRouter } from "./routes/auth";
 import { userRouter } from "./routes/user";
 import { webhooksRouter } from "./routes/webhooks";
 import { itemsRouter } from "./routes/items";
 import { cartRouter } from "./routes/cart";
-import { stripeRouter } from "./routes/stripe";
+import { paymentRouter } from "./routes/payment";
+import { orderRouter } from "./routes/order";
+import { locationRouter } from "./routes/location";
+import { operatorRouter } from "./routes/operator";
+import { storageRouter } from "./routes/storage";
+import S3Service from "./services/s3Service";
 
 dotenv.config();
 
@@ -39,7 +45,7 @@ app.use(cors(options));
 app.use(cookieparser());
 
 /// Json
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 
 // Auth routes
 app.use("/auth", authRouter);
@@ -53,8 +59,20 @@ app.use("/items", itemsRouter);
 // Cart routes
 app.use("/cart", cartRouter);
 
-// Stripe routes
-app.use("/stripe", stripeRouter);
+// Payment routes
+app.use("/payment", paymentRouter);
+
+// Order routes
+app.use("/order", orderRouter);
+
+// Location routes
+app.use("/location", locationRouter);
+
+// Operator routes
+app.use("/operator", operatorRouter);
+
+// Storage routes
+app.use("/storage", storageRouter);
 
 // Whatsapp
 app.use("/webhooks", webhooksRouter);

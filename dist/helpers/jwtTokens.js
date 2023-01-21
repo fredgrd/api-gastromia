@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyAuthToken = exports.signAuthToken = exports.verifySignupToken = exports.signSignupToken = void 0;
+exports.verifyOperatorToken = exports.signOperatorToken = exports.verifyAuthToken = exports.signAuthToken = exports.verifySignupToken = exports.signSignupToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authModel_1 = require("../models/authModel");
 const signSignupToken = (number) => {
@@ -52,3 +52,26 @@ const verifyAuthToken = (token) => {
     }
 };
 exports.verifyAuthToken = verifyAuthToken;
+const signOperatorToken = (token) => {
+    const signedToken = jsonwebtoken_1.default.sign(token, process.env.OPERATOR_SECRET || "", {
+        expiresIn: "10d",
+    });
+    return signedToken;
+};
+exports.signOperatorToken = signOperatorToken;
+const verifyOperatorToken = (token) => {
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.OPERATOR_SECRET || "");
+        if ((0, authModel_1.isOperatorToken)(decoded)) {
+            return decoded;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (error) {
+        console.log(`VerifyDatabaseOpsToken error: ${error}`);
+        return null;
+    }
+};
+exports.verifyOperatorToken = verifyOperatorToken;

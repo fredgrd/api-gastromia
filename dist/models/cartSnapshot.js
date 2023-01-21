@@ -1,15 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CartItemSnapshotSchema = exports.CartItemAttributeSnapshotSchema = exports.isCartItemAttributeSnapshot = exports.isCartItemSnapshot = exports.isCartSnapshot = void 0;
+exports.CartItemSnapshotSchema = exports.CartItemAttributeSnapshotSchema = exports.isCartItemAttributeSnapshot = exports.isCartItemSnapshot = exports.areCartItemSnapshot = exports.isCartSnapshot = void 0;
 const mongoose_1 = require("mongoose");
 // --------------------------------------------------------------------------
 // Helpers
 const isCartSnapshot = (snapshot) => {
     const unsafeCast = snapshot;
-    return (unsafeCast.items_snapshot !== undefined &&
-        unsafeCast.snapshot_version !== undefined);
+    return unsafeCast.items_snapshot !== undefined;
 };
 exports.isCartSnapshot = isCartSnapshot;
+const areCartItemSnapshot = (items) => {
+    const areItemSnapshots = items.reduce((acc, curr) => {
+        if ((0, exports.isCartItemSnapshot)(curr)) {
+            return acc * 1;
+        }
+        else {
+            return acc * 0;
+        }
+    }, 1);
+    return areItemSnapshots === 1;
+};
+exports.areCartItemSnapshot = areCartItemSnapshot;
 const isCartItemSnapshot = (snapshot) => {
     const unsafeCast = snapshot;
     return (unsafeCast._id !== undefined &&

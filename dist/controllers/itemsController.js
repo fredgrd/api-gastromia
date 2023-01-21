@@ -12,24 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchItem = exports.fetchCategory = exports.searchItems = exports.updateItem = exports.createItem = void 0;
+exports.fetchItem = exports.fetchAllItems = exports.fetchCategory = exports.searchItems = exports.deleteItem = exports.updateItem = exports.createItem = void 0;
 const uuid_1 = require("uuid");
+const authenticateOperator_1 = __importDefault(require("../helpers/authenticateOperator"));
 const itemModel_1 = require("../models/itemModel");
-const databaseService_1 = __importDefault(require("../services/databaseService"));
 // --------------------------------------------------------------------------
 // Item
 // Create an Item Document
 /// If the object provided does not conform to the Item interface fails
 const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { token, item } = req.body;
-    const databaseService = new databaseService_1.default();
-    const decodedToken = databaseService.verifyToken(token);
-    if (!decodedToken) {
-        console.log("CreateItem error: OperationTokenNotValid");
-        res.sendStatus(403); // Forbidden
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, "CreateItem");
+    if (!operatorToken) {
         return;
     }
-    if (item && (0, itemModel_1.isItem)(item)) {
+    const item = req.body.item;
+    if (item) {
         try {
             const newItem = new itemModel_1.Item(Object.assign({}, item));
             yield newItem.save();
@@ -37,8 +34,8 @@ const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         catch (error) {
             const mongooseError = error;
-            console.log(`CreateItem error: ${mongooseError.name}`);
-            res.sendStatus(500);
+            console.log(`CreateItem error: ${mongooseError.name} ${mongooseError.message}`);
+            res.status(400).send(mongooseError.message);
         }
     }
     else {
@@ -48,18 +45,14 @@ const createItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createItem = createItem;
 // Update an Item Document
-/// If the object provided does not conform to the ItemSchema no changes will be applied
+// Does not check the strucure of the update object
 const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const itemId = req.body.item_id;
-    const update = req.body.update;
-    const token = req.body.token;
-    const databaseService = new databaseService_1.default();
-    const decodedToken = databaseService.verifyToken(token);
-    if (!decodedToken) {
-        console.log("UpdateItem error: OperationTokenNotValid");
-        res.sendStatus(403); // Forbidden
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, "UpdateItem");
+    if (!operatorToken) {
         return;
     }
+    const itemId = req.body.item_id;
+    const update = req.body.update;
     if (!itemId) {
         console.log("UpdateItem error: ItemIdNotProvided");
         res.sendStatus(400);
@@ -69,12 +62,13 @@ const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         try {
             const item = yield itemModel_1.Item.findOneAndUpdate({ _id: itemId }, Object.assign(Object.assign({}, update), { item_version: (0, uuid_1.v4)() }), {
                 new: true,
-            });
-            res.status(200).json(item);
+            }).orFail();
+            console.log(item);
+            res.status(200).json({ item: item });
         }
         catch (error) {
             const mongooseError = error;
-            console.log(`UpdateItemAttribute error: ${mongooseError.name}`);
+            console.log(`UpdateItemAttribute error: ${mongooseError.name} ${mongooseError.message}`);
             res.sendStatus(500);
         }
     }
@@ -84,13 +78,34 @@ const updateItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.updateItem = updateItem;
-// TODO: Review
+// Deletes the item document
+const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, "DeleteItem");
+    if (!operatorToken) {
+        return;
+    }
+    const itemID = req.body.item_id;
+    if (!itemID || typeof itemID !== "string") {
+        console.log("DeleteItem error: NoItemId");
+        res.status(400).send("NoItemId");
+        return;
+    }
+    try {
+        const deleted = yield itemModel_1.Item.deleteOne({ _id: itemID }).orFail();
+        res.status(200).send(deleted.acknowledged);
+    }
+    catch (error) {
+        const mongooseError = error;
+        console.log(`DeleteItem error: ${mongooseError.name} ${mongooseError.message}`);
+        res.sendStatus(500);
+    }
+});
+exports.deleteItem = deleteItem;
+// Searches the item documents accordding to the provided query
 const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.query.k;
-    const searchId = req.query.search_id;
     try {
-        const items = yield itemModel_1.Item.aggregate()
-            .search({
+        const items = yield itemModel_1.Item.aggregate().search({
             index: "ItemSearch",
             compound: {
                 should: [
@@ -108,42 +123,57 @@ const searchItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     },
                 ],
             },
-        })
-            .addFields({
-            id: "$_id",
-        })
-            .project({
-            _id: 0,
         });
-        res.status(200).json(items);
+        res.status(200).json({ items: items });
     }
     catch (error) {
         res.sendStatus(400);
     }
 });
 exports.searchItems = searchItems;
-// TODO: Review
+// Fetches the category according to the provided query
 const fetchCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cQuery = req.query.c;
     try {
-        const items = yield itemModel_1.Item.find({ category: { $eq: cQuery } });
-        res.status(200).json(items);
+        const items = yield itemModel_1.Item.find({ category: { $eq: cQuery } }).orFail();
+        res.status(200).json({ items: items });
     }
     catch (error) {
-        res.sendStatus(400);
+        const mongooseError = error;
+        console.log(`FetchCategory error: ${mongooseError.name} ${mongooseError.message}`);
+        res.sendStatus(500);
     }
 });
 exports.fetchCategory = fetchCategory;
-// TODO: Review
+// Fetchs all the item documents
+// Used only by the Hub Manager
+const fetchAllItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, "FetchAllItems");
+    if (!operatorToken) {
+        return;
+    }
+    try {
+        const items = yield itemModel_1.Item.find()
+            .populate("attribute_groups.attributes")
+            .orFail();
+        res.status(200).json({ items: items });
+    }
+    catch (error) {
+        const mongooseError = error;
+        console.log(`FetchAllItemss error: ${mongooseError.name} ${mongooseError.message}`);
+        res.sendStatus(500);
+    }
+});
+exports.fetchAllItems = fetchAllItems;
+// Fetches the item document according to the provided query
 const fetchItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const iQuery = req.query.i;
-    console.log("Querying item", iQuery);
     if (typeof iQuery !== "string") {
         res.sendStatus(400);
         return;
     }
     try {
-        const item = yield itemModel_1.Item.findById(iQuery).populate("additions.additions");
+        const item = yield itemModel_1.Item.findById(iQuery).populate("attribute_groups.attributes");
         if (item) {
             res.status(200).json(item);
         }

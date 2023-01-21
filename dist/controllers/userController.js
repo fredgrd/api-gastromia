@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.fetchUser = void 0;
+exports.updateUser = exports.createUser = exports.fetchUser = void 0;
+const uuid_1 = require("uuid");
 const userModel_1 = require("../models/userModel");
 const stripeService_1 = __importDefault(require("../services/stripeService"));
 const jwtTokens_1 = require("../helpers/jwtTokens");
+const authenticateUser_1 = __importDefault(require("../helpers/authenticateUser"));
 // Fetches the user from a valid AuthToken
 /// Returns both the User object and an updated AuthToken
 const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -50,6 +52,8 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         const mongooseError = error;
         console.log(`FetchUser error: ${mongooseError.message}`);
+        res.clearCookie("auth_token");
+        res.sendStatus(500);
     }
 });
 exports.fetchUser = fetchUser;
@@ -76,7 +80,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             stripe_id: "awaiting",
             number: signupToken.number,
             name: name,
-            email: "noemail",
+            email: `unknown-${(0, uuid_1.v4)()}`,
         });
         const customerId = yield stripeService.createCustomer(user.id);
         if (customerId) {
@@ -93,6 +97,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 httpOnly: true,
                 secure: true,
             });
+            res.clearCookie("signup_token");
             res.status(200).json(user);
         }
         else {
@@ -108,3 +113,26 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createUser = createUser;
+// Updates the user
+// Updates the user document
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const authToken = (0, authenticateUser_1.default)(req, res, "UpdateUser");
+    if (!authToken) {
+        return;
+    }
+    const update = req.body.update;
+    if (!update) {
+        console.log("UpdateUser error: UpdateNotProvided");
+        res.sendStatus(400);
+    }
+    try {
+        const user = yield userModel_1.User.findByIdAndUpdate(authToken.id, Object.assign({}, update), { returnOriginal: false }).orFail();
+        res.status(200).json(user);
+    }
+    catch (error) {
+        const mongooseError = error;
+        console.log(`UpdateUser error: ${mongooseError.message}`);
+        res.sendStatus(500);
+    }
+});
+exports.updateUser = updateUser;

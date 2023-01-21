@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { MongooseError, HydratedDocument, Types, Schema } from "mongoose";
+import { MongooseError, HydratedDocument, Types } from "mongoose";
 import { Cart, ICart } from "../models/cartModel";
 import { IItem, isItem, Item } from "../models/itemModel";
 import { verifyAuthToken } from "../helpers/jwtTokens";
@@ -77,7 +77,9 @@ export const updateSnapshot = async (req: Request, res: Response) => {
         excluded: excluded,
       });
     } else {
-      res.status(200).json({ update_snapshot: false });
+      res
+        .status(200)
+        .json({ update_snapshot: false, included: [], excluded: [] });
     }
   } catch (error) {
     console.log(error);
@@ -132,9 +134,16 @@ export const fetchCart = async (req: Request, res: Response) => {
       cart.items
     );
 
-    await cart.updateOne({ items: included });
+    // Some items are no longer valid
+    if (excluded.length) {
+      await cart.updateOne({ items: included });
+    }
 
-    res.status(200).json({ included: included, excluded: excluded });
+    res.status(200).json({
+      update_snapshot: true,
+      included: included,
+      excluded: excluded,
+    });
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(`FetchCart error: ${mongooseError.name}`);

@@ -23,6 +23,16 @@ export const isAuthToken = (token: any): token is IAuthToken => {
   );
 };
 
+export const isOperatorToken = (token: any): token is IOperatorToken => {
+  const unsafeCast = token as IOperatorToken;
+
+  return (
+    unsafeCast.id !== undefined &&
+    unsafeCast.iat !== undefined &&
+    unsafeCast.exp !== undefined
+  );
+};
+
 // --------------------------------------------------------------------------
 // Interface / Schema / Model
 
@@ -36,6 +46,12 @@ export interface IAuthToken {
   id: string;
   stripe_id: string;
   number: string;
+  iat?: number;
+  exp?: number;
+}
+
+export interface IOperatorToken {
+  id: string;
   iat?: number;
   exp?: number;
 }

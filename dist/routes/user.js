@@ -7,3 +7,4 @@ const router = (0, express_1.Router)();
 exports.userRouter = router;
 router.get("/fetch", userController_1.fetchUser);
 router.post("/create", userController_1.createUser);
+router.patch("/update", userController_1.updateUser);

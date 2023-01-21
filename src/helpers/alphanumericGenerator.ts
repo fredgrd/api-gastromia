@@ -1,3 +1,5 @@
+// Generates a random alphanumeric code of length N
+// Used to generate a reference code when creating an order
 export const randomAlphanumeric = (length: number) => {
   const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
   let result = "";

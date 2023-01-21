@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { LoggerService } from "../services/loggerService";
 import { WhatsappMessage, FacebookService } from "../services/facebookService";
 
 export const verifyWhatsapp = (req: Request, res: Response) => {
@@ -14,13 +13,6 @@ export const verifyWhatsapp = (req: Request, res: Response) => {
 };
 
 export const handleWhatsappEvents = async (req: Request, res: Response) => {
-  const loggerService = new LoggerService();
-
-  await loggerService.createLog({
-    name: "[facebookEvent] Incoming request",
-    body: JSON.stringify(req.body),
-  });
-
   if (
     req.body.entry[0] &&
     req.body.entry[0].changes &&
@@ -74,11 +66,6 @@ export const handleWhatsappEvents = async (req: Request, res: Response) => {
           command = "ciao";
       }
     }
-
-    await loggerService.createLog({
-      name: "[facebookEvent] - Command",
-      body: `${eventId} ${fromNumber} ${command}`,
-    });
 
     switch (command) {
       case "ordine":

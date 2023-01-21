@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 import { MongooseError } from "mongoose";
 import { User } from "../models/userModel";
 import StripeService from "../services/stripeService";
@@ -7,6 +8,7 @@ import {
   verifyAuthToken,
   verifySignupToken,
 } from "../helpers/jwtTokens";
+import authenticateUser from "../helpers/authenticateUser";
 
 // Fetches the user from a valid AuthToken
 /// Returns both the User object and an updated AuthToken
@@ -47,6 +49,10 @@ export const fetchUser = async (req: Request, res: Response) => {
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(`FetchUser error: ${mongooseError.message}`);
+
+    res.clearCookie("auth_token");
+
+    res.sendStatus(500);
   }
 };
 
@@ -77,7 +83,7 @@ export const createUser = async (req: Request, res: Response) => {
       stripe_id: "awaiting",
       number: signupToken.number,
       name: name,
-      email: "noemail",
+      email: `unknown-${uuidv4()}`,
     });
 
     const customerId = await stripeService.createCustomer(user.id);
@@ -98,6 +104,8 @@ export const createUser = async (req: Request, res: Response) => {
         secure: true,
       });
 
+      res.clearCookie("signup_token");
+
       res.status(200).json(user);
     } else {
       user.delete();
@@ -108,5 +116,38 @@ export const createUser = async (req: Request, res: Response) => {
     const mongooseError = error as MongooseError;
     console.log(`CreateUser error: ${mongooseError.message}`);
     res.sendStatus(400);
+  }
+};
+
+// Updates the user
+// Updates the user document
+export const updateUser = async (req: Request, res: Response) => {
+  const authToken = authenticateUser(req, res, "UpdateUser");
+
+  if (!authToken) {
+    return;
+  }
+
+  const update = req.body.update;
+
+  if (!update) {
+    console.log("UpdateUser error: UpdateNotProvided");
+    res.sendStatus(400);
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      authToken.id,
+      {
+        ...update,
+      },
+      { returnOriginal: false }
+    ).orFail();
+
+    res.status(200).json(user);
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(`UpdateUser error: ${mongooseError.message}`);
+    res.sendStatus(500);
   }
 };

@@ -31,7 +31,7 @@ const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
         required: true,
-        default: " ",
+        unique: true,
     },
     createdAt: {
         type: Date,

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.operatorRouter = void 0;
+const express_1 = require("express");
+const operatorController_1 = require("../controllers/operatorController");
+const router = (0, express_1.Router)();
+exports.operatorRouter = router;
+router.post("/login", operatorController_1.loginOperator);
+router.get("/logout", operatorController_1.logoutOperator);
+router.get("/fetch", operatorController_1.fetchOperator);
