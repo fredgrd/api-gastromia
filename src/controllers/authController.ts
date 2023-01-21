@@ -68,7 +68,7 @@ export const completeVerification = async (req: Request, res: Response) => {
           maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
           httpOnly: true,
           secure: true,
-          domain: "www.gastromia.com",
+          domain: "gastromia.com",
         });
 
         res.status(200).json({ user: user, status: "UserExists" });
@@ -89,7 +89,7 @@ export const completeVerification = async (req: Request, res: Response) => {
         maxAge: 60 * 10 * 1000, // 60s * 10m => 10 minutes in seconds => in milliseconds
         httpOnly: true,
         secure: true,
-        domain: "www.gastromia.com",
+        domain: "gastromia.com",
       });
 
       res.status(200).json({ user: null, status: "NewUser" });
