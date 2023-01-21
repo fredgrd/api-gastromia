@@ -151,7 +151,7 @@ const fetchOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return;
     }
     try {
-        const orders = yield orderModel_1.Order.find({ user_id: authToken.id }).orFail();
+        const orders = yield orderModel_1.Order.find({ user_id: authToken.id });
         res.status(200).json({ orders: orders });
     }
     catch (error) {
