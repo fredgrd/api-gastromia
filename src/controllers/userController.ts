@@ -72,6 +72,9 @@ export const createUser = async (req: Request, res: Response) => {
   // Verify token
   const signupToken = verifySignupToken(token);
 
+  console.log("USER SIGNUP TOKEN");
+  console.log(signupToken, token);
+
   if (!signupToken) {
     console.log("CreateUser error: NotSignupToken");
     res.sendStatus(403);

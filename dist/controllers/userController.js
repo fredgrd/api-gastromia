@@ -70,6 +70,8 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     // Verify token
     const signupToken = (0, jwtTokens_1.verifySignupToken)(token);
+    console.log("USER SIGNUP TOKEN");
+    console.log(signupToken, token);
     if (!signupToken) {
         console.log("CreateUser error: NotSignupToken");
         res.sendStatus(403);
