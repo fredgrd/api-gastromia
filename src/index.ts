@@ -32,6 +32,7 @@ const allowedOrigins = [
   "http://192.168.1.4:3000",
   "https://www.gastromia.com",
   "https://www.hub.gastromia.com",
+  "https://hub.gastromia.com",
 ];
 
 const options: cors.CorsOptions = {
