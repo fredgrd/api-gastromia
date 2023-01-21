@@ -8,6 +8,7 @@ import {
   verifyAuthToken,
   verifySignupToken,
 } from "../helpers/jwtTokens";
+import authenticateUser from "../helpers/authenticateUser";
 
 // Fetches the user from a valid AuthToken
 /// Returns both the User object and an updated AuthToken
@@ -115,5 +116,38 @@ export const createUser = async (req: Request, res: Response) => {
     const mongooseError = error as MongooseError;
     console.log(`CreateUser error: ${mongooseError.message}`);
     res.sendStatus(400);
+  }
+};
+
+// Updates the user
+// Updates the user document
+export const updateUser = async (req: Request, res: Response) => {
+  const authToken = authenticateUser(req, res, "UpdateUser");
+
+  if (!authToken) {
+    return;
+  }
+
+  const update = req.body.update;
+
+  if (!update) {
+    console.log("UpdateUser error: UpdateNotProvided");
+    res.sendStatus(400);
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      authToken.id,
+      {
+        ...update,
+      },
+      { returnOriginal: false }
+    ).orFail();
+
+    res.status(200).json(user);
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(`UpdateUser error: ${mongooseError.message}`);
+    res.sendStatus(500);
   }
 };

@@ -4,6 +4,9 @@ import { User } from "../models/userModel";
 import { signAuthToken, signSignupToken } from "../helpers/jwtTokens";
 import { MongooseError } from "mongoose";
 
+// Starts the phone number verification
+// Checks if the provided number is valid and well formatted
+// Sends an OTP to the provided phone number as a SMS
 export const startVerification = async (req: Request, res: Response) => {
   const number = req.body.number;
   const twilioService = new TwilioService();
@@ -37,6 +40,10 @@ export const startVerification = async (req: Request, res: Response) => {
   }
 };
 
+// Completes the number verification
+// Checks OTP validity for the provided phone number
+// If a user exists return the user document along w/ an AuthToken
+// If a user does not exist returns a SignupToken
 export const completeVerification = async (req: Request, res: Response) => {
   const number = req.body.number;
   const code = req.body.code;
@@ -94,6 +101,8 @@ export const completeVerification = async (req: Request, res: Response) => {
   }
 };
 
+// Logous out the user
+// Clears the user AuthToken from the browser
 export const logout = async (req: Request, res: Response) => {
   res.clearCookie("auth_token");
   res.sendStatus(200);

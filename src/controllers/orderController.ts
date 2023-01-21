@@ -12,6 +12,7 @@ import {
   Order,
 } from "../models/orderModel";
 import { randomAlphanumeric } from "../helpers/alphanumericGenerator";
+import authenticateOperator from "../helpers/authenticateOperator";
 
 // Creates the order
 //// If the items validation fails it returns a CartUpdate object
@@ -122,8 +123,10 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
+// Update the user order when purchasing with a card
+// The order is updated from pending to submitted when the card payment is successfull
 export const updatePaidOrder = async (req: Request, res: Response) => {
-  const authToken = authenticateUser(req, res, "CreateOrder");
+  const authToken = authenticateUser(req, res, "UpdatePaidOrder");
 
   if (!authToken) {
     return;
@@ -158,7 +161,8 @@ export const updatePaidOrder = async (req: Request, res: Response) => {
   }
 };
 
-// Fetch the user orders
+// Fetch the user orders documents
+// Only used by the Gastromia WebApp to retrieve all the orders matching the user_id
 export const fetchOrders = async (req: Request, res: Response) => {
   const authToken = authenticateUser(req, res, "CreateOrder");
 
@@ -173,6 +177,149 @@ export const fetchOrders = async (req: Request, res: Response) => {
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(`FetchOrders error: ${mongooseError.name}`);
+    res.sendStatus(500);
+  }
+};
+
+// Fetches the active orders (matching the submitted, accepted, or ready statuses)
+// Orders not active are not returned to the operator
+// Used only by the Hub Manager
+export const fetchActiveOrders = async (req: Request, res: Response) => {
+  const operatorToken = authenticateOperator(req, res, "FetchActiveOrders");
+
+  if (!operatorToken) {
+    return;
+  }
+
+  try {
+    const orders = await Order.find({
+      status: {
+        $in: ["submitted", "accepted", "ready"],
+      },
+    }).orFail();
+
+    res.status(200).json({ orders: orders });
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(
+      `FetchActiveOrders error: ${mongooseError.name} ${mongooseError.message}`
+    );
+    res.sendStatus(500);
+  }
+};
+
+// Fetches all the orders received
+// Used only by the Hub Manager
+export const fetchAllOrders = async (req: Request, res: Response) => {
+  const operatorToken = authenticateOperator(req, res, "FetchAllOrders");
+
+  if (!operatorToken) {
+    return;
+  }
+
+  try {
+    const orders = await Order.find().orFail();
+
+    res.status(200).json({ orders: orders });
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(
+      `FetchAllOrders error: ${mongooseError.name} ${mongooseError.message}`
+    );
+    res.sendStatus(500);
+  }
+};
+
+// Fetches a specific order for the operator
+// Used only by the Hub Manager
+export const fetchOrder = async (req: Request, res: Response) => {
+  const operatorToken = authenticateOperator(req, res, "UpdateOrderStatus");
+
+  if (!operatorToken) {
+    return;
+  }
+
+  const orderId = req.query.o;
+
+  if (!orderId || typeof orderId !== "string") {
+    console.log("UpdateOrderStatus error: NoOrderProvided");
+    res.sendStatus(400);
+    return;
+  }
+
+  try {
+    const order = await Order.findById(orderId).orFail();
+
+    res.status(200).json({ order: order });
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(`FetchOrder error: ${mongooseError.name}`);
+    res.sendStatus(500);
+  }
+};
+
+// Update the order status
+// Used only by the Hub Manager
+export const updateOrderStatus = async (req: Request, res: Response) => {
+  const operatorToken = authenticateOperator(req, res, "UpdateOrderStatus");
+
+  if (!operatorToken) {
+    return;
+  }
+
+  const orderId: string | any = req.body.order_id;
+  const status: string | any = req.body.status;
+
+  if (!orderId || typeof orderId !== "string") {
+    console.log("UpdateOrderStatus error: NoOrderProvided");
+    res.sendStatus(400);
+    return;
+  }
+
+  if (!status || typeof status !== "string") {
+    console.log("UpdateOrderStatus error: NoStatusProvided");
+    res.sendStatus(400);
+    return;
+  }
+
+  try {
+    let order = await Order.findById(orderId).orFail();
+
+    if (order.card_payment && status === "rejected") {
+      const stripe = new StripeService();
+
+      const refunded = await stripe.refundPaymentIntent(
+        order.card_payment_intent
+      );
+
+      if (refunded && refunded.status === "succeeded") {
+        order.status = "refunded";
+        await order.save();
+
+        res.status(200).json({ order: order });
+        return;
+      } else {
+        res.sendStatus(500);
+        return;
+      }
+    }
+
+    if (status === "rejected") {
+      order.status = "rejected";
+      await order.save();
+
+      res.status(200).json({ order: order });
+      return;
+    }
+
+    order.status = status;
+    await order.save();
+    res.status(200).json({ order: order });
+    return;
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(mongooseError.message);
+    console.log(`UpdateOrderStatus error: ${mongooseError.name}`);
     res.sendStatus(500);
   }
 };

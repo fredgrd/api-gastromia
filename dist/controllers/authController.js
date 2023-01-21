@@ -13,6 +13,9 @@ exports.logout = exports.completeVerification = exports.startVerification = void
 const twilioService_1 = require("../services/twilioService");
 const userModel_1 = require("../models/userModel");
 const jwtTokens_1 = require("../helpers/jwtTokens");
+// Starts the phone number verification
+// Checks if the provided number is valid and well formatted
+// Sends an OTP to the provided phone number as a SMS
 const startVerification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const number = req.body.number;
     const twilioService = new twilioService_1.TwilioService();
@@ -42,6 +45,10 @@ const startVerification = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.startVerification = startVerification;
+// Completes the number verification
+// Checks OTP validity for the provided phone number
+// If a user exists return the user document along w/ an AuthToken
+// If a user does not exist returns a SignupToken
 const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const number = req.body.number;
     const code = req.body.code;
@@ -94,6 +101,8 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.completeVerification = completeVerification;
+// Logous out the user
+// Clears the user AuthToken from the browser
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.clearCookie("auth_token");
     res.sendStatus(200);

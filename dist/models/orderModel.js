@@ -39,7 +39,16 @@ const OrderSchema = new mongoose_1.Schema({
     status: {
         type: String,
         required: true,
-        enum: ["pending", "submitted", "accepted", "rejected", "ready", "refunded"],
+        enum: [
+            "pending",
+            "submitted",
+            "accepted",
+            "rejected",
+            "ready",
+            "stalled",
+            "refunded",
+            "completed",
+        ],
         default: "pending",
     },
     cash_payment: {

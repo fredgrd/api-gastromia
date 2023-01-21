@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleWhatsappEvents = exports.verifyWhatsapp = void 0;
-const loggerService_1 = require("../services/loggerService");
 const facebookService_1 = require("../services/facebookService");
 const verifyWhatsapp = (req, res) => {
     const challengeCode = req.query["hub.challenge"];
@@ -24,11 +23,6 @@ const verifyWhatsapp = (req, res) => {
 };
 exports.verifyWhatsapp = verifyWhatsapp;
 const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const loggerService = new loggerService_1.LoggerService();
-    yield loggerService.createLog({
-        name: "[facebookEvent] Incoming request",
-        body: JSON.stringify(req.body),
-    });
     if (req.body.entry[0] &&
         req.body.entry[0].changes &&
         req.body.entry[0].changes[0] &&
@@ -76,10 +70,6 @@ const handleWhatsappEvents = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     command = "ciao";
             }
         }
-        yield loggerService.createLog({
-            name: "[facebookEvent] - Command",
-            body: `${eventId} ${fromNumber} ${command}`,
-        });
         switch (command) {
             case "ordine":
                 yield facebookService.acceptOrder(req.body.entry[0].changes[0].value.messages[0].text.body, fromNumber);

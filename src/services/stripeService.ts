@@ -87,12 +87,35 @@ class StripeService {
     }
   }
 
+  async detach(id: string): Promise<boolean> {
+    try {
+      const _ = await this.stripe.paymentMethods.detach(id);
+
+      return true;
+    } catch (error) {
+      console.log(`DetachPaymentMethod error: ${error}`);
+      return false;
+    }
+  }
+
   async fetchPaymentIntent(id: string): Promise<Stripe.PaymentIntent | null> {
     try {
       const intent = await this.stripe.paymentIntents.retrieve(id);
       return intent;
     } catch (error) {
       console.log(`FetchPaymentMethod error: ${error}`);
+      return null;
+    }
+  }
+
+  async refundPaymentIntent(id: string): Promise<Stripe.Refund | null> {
+    try {
+      const refund = await this.stripe.refunds.create({
+        payment_intent: id,
+      });
+      return refund;
+    } catch (error) {
+      console.log(`RefundPaymentIntent error: ${error}`);
       return null;
     }
   }

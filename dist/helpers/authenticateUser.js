@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwtTokens_1 = require("./jwtTokens");
+// Authenticates the user according to the token provided
+// If the token is not provied it fails
 const authenticateUser = (req, res, from) => {
     const token = req.cookies.auth_token;
     if (!token || typeof token !== "string") {

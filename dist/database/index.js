@@ -13,7 +13,9 @@ const connectDatabase = () => {
         if (error) {
             console.log(`MongoDB connection error: ${error}`);
         }
-        console.log("Connected to MongoDB 🚀");
+        else {
+            console.log("Connected to MongoDB 🚀");
+        }
     });
 };
 exports.connectDatabase = connectDatabase;

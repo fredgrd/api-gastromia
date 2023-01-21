@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { IItem } from "../models/itemModel";
 import { IItemAttribute, isItemAttribute } from "../models/itemAttributeModel";
 import { ICartItemSnapshot } from "../models/cartSnapshot";

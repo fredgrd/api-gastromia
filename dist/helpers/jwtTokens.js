@@ -3,10 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyDatabaseToken = exports.signDatabaseOpsToken = exports.verifyAuthToken = exports.signAuthToken = exports.verifySignupToken = exports.signSignupToken = void 0;
+exports.verifyOperatorToken = exports.signOperatorToken = exports.verifyAuthToken = exports.signAuthToken = exports.verifySignupToken = exports.signSignupToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authModel_1 = require("../models/authModel");
-const databaseOps_1 = require("../models/databaseOps");
 const signSignupToken = (number) => {
     const signedToken = jsonwebtoken_1.default.sign({ number: number }, process.env.JWT_SECRET || "", {
         expiresIn: "10m",
@@ -53,17 +52,17 @@ const verifyAuthToken = (token) => {
     }
 };
 exports.verifyAuthToken = verifyAuthToken;
-const signDatabaseOpsToken = (token) => {
-    const signedToken = jsonwebtoken_1.default.sign(token, process.env.DB_OPERATION_SECRET || "", {
+const signOperatorToken = (token) => {
+    const signedToken = jsonwebtoken_1.default.sign(token, process.env.OPERATOR_SECRET || "", {
         expiresIn: "10d",
     });
     return signedToken;
 };
-exports.signDatabaseOpsToken = signDatabaseOpsToken;
-const verifyDatabaseToken = (token) => {
+exports.signOperatorToken = signOperatorToken;
+const verifyOperatorToken = (token) => {
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.DB_OPERATION_SECRET || "");
-        if ((0, databaseOps_1.isDatabaseOpsToken)(decoded)) {
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.OPERATOR_SECRET || "");
+        if ((0, authModel_1.isOperatorToken)(decoded)) {
             return decoded;
         }
         else {
@@ -75,4 +74,4 @@ const verifyDatabaseToken = (token) => {
         return null;
     }
 };
-exports.verifyDatabaseToken = verifyDatabaseToken;
+exports.verifyOperatorToken = verifyOperatorToken;

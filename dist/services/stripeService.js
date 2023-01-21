@@ -91,6 +91,18 @@ class StripeService {
             }
         });
     }
+    detach(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const _ = yield this.stripe.paymentMethods.detach(id);
+                return true;
+            }
+            catch (error) {
+                console.log(`DetachPaymentMethod error: ${error}`);
+                return false;
+            }
+        });
+    }
     fetchPaymentIntent(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -99,6 +111,20 @@ class StripeService {
             }
             catch (error) {
                 console.log(`FetchPaymentMethod error: ${error}`);
+                return null;
+            }
+        });
+    }
+    refundPaymentIntent(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const refund = yield this.stripe.refunds.create({
+                    payment_intent: id,
+                });
+                return refund;
+            }
+            catch (error) {
+                console.log(`RefundPaymentIntent error: ${error}`);
                 return null;
             }
         });

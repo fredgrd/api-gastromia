@@ -1,5 +1,4 @@
 import axios from "axios";
-import { LoggerService } from "./loggerService";
 import { randomAlphanumeric } from "../helpers/alphanumericGenerator";
 import whatsappPayloads from "../data/whatsapp.json";
 

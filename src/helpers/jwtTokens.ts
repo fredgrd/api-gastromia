@@ -4,8 +4,9 @@ import {
   IAuthToken,
   isSignupToken,
   isAuthToken,
+  IOperatorToken,
+  isOperatorToken,
 } from "../models/authModel";
-import { IDatabaseOpsToken, isDatabaseOpsToken } from "../models/databaseOps";
 
 export const signSignupToken = (number: string): string => {
   const signedToken = jwt.sign(
@@ -57,21 +58,19 @@ export const verifyAuthToken = (token: string): IAuthToken | null => {
   }
 };
 
-export const signDatabaseOpsToken = (token: IDatabaseOpsToken): string => {
-  const signedToken = jwt.sign(token, process.env.DB_OPERATION_SECRET || "", {
+export const signOperatorToken = (token: IOperatorToken): string => {
+  const signedToken = jwt.sign(token, process.env.OPERATOR_SECRET || "", {
     expiresIn: "10d",
   });
 
   return signedToken;
 };
 
-export const verifyDatabaseToken = (
-  token: string
-): IDatabaseOpsToken | null => {
+export const verifyOperatorToken = (token: string): IOperatorToken | null => {
   try {
-    const decoded = jwt.verify(token, process.env.DB_OPERATION_SECRET || "");
+    const decoded = jwt.verify(token, process.env.OPERATOR_SECRET || "");
 
-    if (isDatabaseOpsToken(decoded)) {
+    if (isOperatorToken(decoded)) {
       return decoded;
     } else {
       return null;

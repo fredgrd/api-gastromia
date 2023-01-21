@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { IAuthToken } from "../models/authModel";
 import { verifyAuthToken } from "./jwtTokens";
 
+// Authenticates the user according to the token provided
+// If the token is not provied it fails
 const authenticateUser = (
   req: Request,
   res: Response,

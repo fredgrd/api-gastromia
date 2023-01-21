@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { Item, isItem } from "../models/itemModel";
-import { verifyDatabaseToken } from "../helpers/jwtTokens";
+import authenticateOperator from "../helpers/authenticateOperator";
+import { Item } from "../models/itemModel";
 
 // --------------------------------------------------------------------------
 // Item
@@ -10,14 +10,13 @@ import { verifyDatabaseToken } from "../helpers/jwtTokens";
 // Create an Item Document
 /// If the object provided does not conform to the Item interface fails
 export const createItem = async (req: Request, res: Response) => {
-  const { token, item } = req.body;
-  const decodedToken = verifyDatabaseToken(token);
+  const operatorToken = authenticateOperator(req, res, "CreateItem");
 
-  if (!decodedToken) {
-    console.log("CreateItem error: OperationTokenNotValid");
-    res.sendStatus(403); // Forbidden
+  if (!operatorToken) {
     return;
   }
+
+  const item = req.body.item;
 
   if (item) {
     try {
@@ -26,8 +25,10 @@ export const createItem = async (req: Request, res: Response) => {
       res.sendStatus(200);
     } catch (error) {
       const mongooseError = error as MongooseError;
-      console.log(`CreateItem error: ${mongooseError.name}`);
-      res.sendStatus(500);
+      console.log(
+        `CreateItem error: ${mongooseError.name} ${mongooseError.message}`
+      );
+      res.status(400).send(mongooseError.message);
     }
   } else {
     console.log("CreateItem error: NotItem");
@@ -36,18 +37,16 @@ export const createItem = async (req: Request, res: Response) => {
 };
 
 // Update an Item Document
-/// If the object provided does not conform to the ItemSchema no changes will be applied
+// Does not check the strucure of the update object
 export const updateItem = async (req: Request, res: Response) => {
-  const itemId = req.body.item_id;
-  const update = req.body.update;
-  const token = req.body.token;
-  const decodedToken = verifyDatabaseToken(token);
+  const operatorToken = authenticateOperator(req, res, "UpdateItem");
 
-  if (!decodedToken) {
-    console.log("UpdateItem error: OperationTokenNotValid");
-    res.sendStatus(403); // Forbidden
+  if (!operatorToken) {
     return;
   }
+
+  const itemId = req.body.item_id;
+  const update = req.body.update;
 
   if (!itemId) {
     console.log("UpdateItem error: ItemIdNotProvided");
@@ -63,11 +62,16 @@ export const updateItem = async (req: Request, res: Response) => {
         {
           new: true,
         }
-      );
-      res.status(200).json(item);
+      ).orFail();
+
+      console.log(item);
+
+      res.status(200).json({ item: item });
     } catch (error) {
       const mongooseError = error as MongooseError;
-      console.log(`UpdateItemAttribute error: ${mongooseError.name}`);
+      console.log(
+        `UpdateItemAttribute error: ${mongooseError.name} ${mongooseError.message}`
+      );
       res.sendStatus(500);
     }
   } else {
@@ -76,10 +80,37 @@ export const updateItem = async (req: Request, res: Response) => {
   }
 };
 
-// TODO: Review
+// Deletes the item document
+export const deleteItem = async (req: Request, res: Response) => {
+  const operatorToken = authenticateOperator(req, res, "DeleteItem");
+
+  if (!operatorToken) {
+    return;
+  }
+
+  const itemID: string | any = req.body.item_id;
+
+  if (!itemID || typeof itemID !== "string") {
+    console.log("DeleteItem error: NoItemId");
+    res.status(400).send("NoItemId");
+    return;
+  }
+
+  try {
+    const deleted = await Item.deleteOne({ _id: itemID }).orFail();
+    res.status(200).send(deleted.acknowledged);
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(
+      `DeleteItem error: ${mongooseError.name} ${mongooseError.message}`
+    );
+    res.sendStatus(500);
+  }
+};
+
+// Searches the item documents accordding to the provided query
 export const searchItems = async (req: Request, res: Response) => {
   const query = req.query.k;
-  const searchId = req.query.search_id;
 
   try {
     const items = await Item.aggregate().search({
@@ -108,24 +139,49 @@ export const searchItems = async (req: Request, res: Response) => {
   }
 };
 
-// TODO: Review
+// Fetches the category according to the provided query
 export const fetchCategory = async (req: Request, res: Response) => {
   const cQuery = req.query.c;
 
   try {
-    const items = await Item.find({ category: { $eq: cQuery } });
+    const items = await Item.find({ category: { $eq: cQuery } }).orFail();
 
     res.status(200).json({ items: items });
   } catch (error) {
-    res.sendStatus(400);
+    const mongooseError = error as MongooseError;
+    console.log(
+      `FetchCategory error: ${mongooseError.name} ${mongooseError.message}`
+    );
+    res.sendStatus(500);
   }
 };
 
-// TODO: Review
+// Fetchs all the item documents
+// Used only by the Hub Manager
+export const fetchAllItems = async (req: Request, res: Response) => {
+  const operatorToken = authenticateOperator(req, res, "FetchAllItems");
+
+  if (!operatorToken) {
+    return;
+  }
+
+  try {
+    const items = await Item.find()
+      .populate("attribute_groups.attributes")
+      .orFail();
+    res.status(200).json({ items: items });
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(
+      `FetchAllItemss error: ${mongooseError.name} ${mongooseError.message}`
+    );
+    res.sendStatus(500);
+  }
+};
+
+// Fetches the item document according to the provided query
 export const fetchItem = async (req: Request, res: Response) => {
   const iQuery = req.query.i;
-
-  console.log("Querying item", iQuery);
 
   if (typeof iQuery !== "string") {
     res.sendStatus(400);
