@@ -40,6 +40,7 @@ const options: cors.CorsOptions = {
 };
 
 app.use(cors(options));
+app.options("*", cors());
 
 /// Cookie parser
 app.use(cookieparser());
