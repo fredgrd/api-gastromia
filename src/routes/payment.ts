@@ -7,7 +7,7 @@ import {
 
 const router = Router();
 
-router.post("/setup", createSetupIntent);
+router.get("/setup", createSetupIntent);
 
 router.post("/cardpayment");
 
