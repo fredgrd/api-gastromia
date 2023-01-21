@@ -70,7 +70,7 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     maxAge: 60 * 60 * 24 * 10 * 1000,
                     httpOnly: true,
                     secure: true,
-                    domain: "gastromia.com",
+                    domain: "www.gastromia.com",
                 });
                 res.status(200).json({ user: user, status: "UserExists" });
                 return;
@@ -89,6 +89,7 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 maxAge: 60 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
+                domain: "www.gastromia.com",
             });
             res.status(200).json({ user: null, status: "NewUser" });
             break;

@@ -21,21 +21,13 @@ const authenticateUser_1 = __importDefault(require("../helpers/authenticateUser"
 // Fetches the user from a valid AuthToken
 /// Returns both the User object and an updated AuthToken
 const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.auth_token;
-    if (!token || typeof token !== "string") {
-        console.log("FetchUser error: MissingToken");
-        res.sendStatus(403);
+    const authToken = (0, authenticateUser_1.default)(req, res, "FetchUser");
+    if (!authToken) {
         return;
     }
-    // Verify token
-    const authtoken = (0, jwtTokens_1.verifyAuthToken)(token);
-    if (!authtoken) {
-        console.log("FetchUser error: NotAuthToken");
-        res.sendStatus(403);
-        return;
-    }
+    console.log(req.cookies.auth_token);
     try {
-        const user = yield userModel_1.User.findById(authtoken.id).orFail();
+        const user = yield userModel_1.User.findById(authToken.id).orFail();
         // Update the AuthToken
         const token = (0, jwtTokens_1.signAuthToken)({
             id: user.id,
@@ -46,6 +38,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 60 * 60 * 24 * 10 * 1000,
             httpOnly: true,
             secure: true,
+            domain: "www.gastromia.com",
         });
         res.status(200).json(user);
     }

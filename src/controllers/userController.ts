@@ -13,25 +13,16 @@ import authenticateUser from "../helpers/authenticateUser";
 // Fetches the user from a valid AuthToken
 /// Returns both the User object and an updated AuthToken
 export const fetchUser = async (req: Request, res: Response) => {
-  const token = req.cookies.auth_token;
+  const authToken = authenticateUser(req, res, "FetchUser");
 
-  if (!token || typeof token !== "string") {
-    console.log("FetchUser error: MissingToken");
-    res.sendStatus(403);
+  if (!authToken) {
     return;
   }
 
-  // Verify token
-  const authtoken = verifyAuthToken(token);
-
-  if (!authtoken) {
-    console.log("FetchUser error: NotAuthToken");
-    res.sendStatus(403);
-    return;
-  }
+  console.log(req.cookies.auth_token);
 
   try {
-    const user = await User.findById(authtoken.id).orFail();
+    const user = await User.findById(authToken.id).orFail();
 
     // Update the AuthToken
     const token = signAuthToken({
@@ -43,6 +34,7 @@ export const fetchUser = async (req: Request, res: Response) => {
       maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
       httpOnly: true,
       secure: true,
+      domain: "www.gastromia.com",
     });
 
     res.status(200).json(user);
