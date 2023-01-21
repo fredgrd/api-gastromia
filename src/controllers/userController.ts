@@ -19,7 +19,7 @@ export const fetchUser = async (req: Request, res: Response) => {
     return;
   }
 
-  console.log(req.cookies.auth_token);
+  console.log("AUTHTOKEN", req.cookies.auth_token);
 
   try {
     const user = await User.findById(authToken.id).orFail();
@@ -97,6 +97,7 @@ export const createUser = async (req: Request, res: Response) => {
         maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
         httpOnly: true,
         secure: true,
+        domain: "www.gastromia.com",
       });
 
       res.clearCookie("signup_token");

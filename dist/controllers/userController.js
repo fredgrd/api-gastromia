@@ -25,7 +25,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!authToken) {
         return;
     }
-    console.log(req.cookies.auth_token);
+    console.log("AUTHTOKEN", req.cookies.auth_token);
     try {
         const user = yield userModel_1.User.findById(authToken.id).orFail();
         // Update the AuthToken
@@ -91,6 +91,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 maxAge: 60 * 60 * 24 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
+                domain: "www.gastromia.com",
             });
             res.clearCookie("signup_token");
             res.status(200).json(user);
