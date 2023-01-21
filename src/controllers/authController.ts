@@ -63,6 +63,7 @@ export const completeVerification = async (req: Request, res: Response) => {
           stripe_id: user.stripe_id,
           number: user.number,
         });
+        
         res.cookie("auth_token", token, {
           maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
           httpOnly: true,

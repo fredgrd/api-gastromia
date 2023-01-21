@@ -31,6 +31,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://192.168.1.4:3000",
   "https://www.gastromia.com",
+  "https://gastromia.com",
   "https://www.hub.gastromia.com",
   "https://hub.gastromia.com",
 ];
