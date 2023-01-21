@@ -171,8 +171,7 @@ export const fetchOrders = async (req: Request, res: Response) => {
   }
 
   try {
-    const orders = await Order.find({ user_id: authToken.id }).orFail();
-
+    const orders = await Order.find({ user_id: authToken.id });
     res.status(200).json({ orders: orders });
   } catch (error) {
     const mongooseError = error as MongooseError;
