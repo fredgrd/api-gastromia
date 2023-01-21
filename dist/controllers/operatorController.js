@@ -41,6 +41,7 @@ const loginOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
+                domain: "gastromia.com",
             });
             res.status(200).json({
                 _id: operator.id,

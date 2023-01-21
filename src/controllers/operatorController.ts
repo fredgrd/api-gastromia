@@ -36,6 +36,7 @@ export const loginOperator = async (req: Request, res: Response) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
+        domain: "gastromia.com",
       });
 
       res.status(200).json({
