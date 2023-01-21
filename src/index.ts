@@ -16,9 +16,8 @@ import { orderRouter } from "./routes/order";
 import { locationRouter } from "./routes/location";
 import { operatorRouter } from "./routes/operator";
 import { storageRouter } from "./routes/storage";
-import S3Service from "./services/s3Service";
 
-dotenv.config();
+// dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
