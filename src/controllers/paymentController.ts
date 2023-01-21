@@ -6,25 +6,18 @@ import StripeService from "../services/stripeService";
 // Creates a card setupintent w/ Strip SDK
 // Used only by the Gastromia WebApp
 export const createSetupIntent = async (req: Request, res: Response) => {
-  const token = req.cookies.auth_token;
+  const authToken = authenticateUser(req, res, "CreateSetupIntent");
 
-  if (!token || typeof token !== "string") {
-    console.log("UpdateCart error: MissingToken");
-    res.status(403).send("MissingToken");
+  console.log(req.cookies);
+
+  if (!authToken) {
     return;
   }
 
-  // Verify token
-  const authtoken = verifyAuthToken(token);
-
-  if (!authtoken) {
-    console.log("UpdateCart error: NotAuthToken");
-    res.status(403).send("NotAuthToken");
-    return;
-  }
+  console.log("AUTH TOKEN", authToken);
 
   const stripe = new StripeService();
-  const setupIntent = await stripe.setupIntent(authtoken.stripe_id);
+  const setupIntent = await stripe.setupIntent(authToken.stripe_id);
 
   if (setupIntent) {
     res.status(200).json({ client_secret: setupIntent });

@@ -14,26 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.detachCard = exports.fetchCards = exports.createSetupIntent = void 0;
 const authenticateUser_1 = __importDefault(require("../helpers/authenticateUser"));
-const jwtTokens_1 = require("../helpers/jwtTokens");
 const stripeService_1 = __importDefault(require("../services/stripeService"));
 // Creates a card setupintent w/ Strip SDK
 // Used only by the Gastromia WebApp
 const createSetupIntent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.auth_token;
-    if (!token || typeof token !== "string") {
-        console.log("UpdateCart error: MissingToken");
-        res.status(403).send("MissingToken");
+    const authToken = (0, authenticateUser_1.default)(req, res, "CreateSetupIntent");
+    console.log(req.cookies);
+    if (!authToken) {
         return;
     }
-    // Verify token
-    const authtoken = (0, jwtTokens_1.verifyAuthToken)(token);
-    if (!authtoken) {
-        console.log("UpdateCart error: NotAuthToken");
-        res.status(403).send("NotAuthToken");
-        return;
-    }
+    console.log("AUTH TOKEN", authToken);
     const stripe = new stripeService_1.default();
-    const setupIntent = yield stripe.setupIntent(authtoken.stripe_id);
+    const setupIntent = yield stripe.setupIntent(authToken.stripe_id);
     if (setupIntent) {
         res.status(200).json({ client_secret: setupIntent });
     }
