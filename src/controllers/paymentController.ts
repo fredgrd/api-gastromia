@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import authenticateUser from "../helpers/authenticateUser";
-import { verifyAuthToken } from "../helpers/jwtTokens";
 import StripeService from "../services/stripeService";
 
 // Creates a card setupintent w/ Strip SDK
