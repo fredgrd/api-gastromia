@@ -16,7 +16,7 @@ import { locationRouter } from "./routes/location";
 import { operatorRouter } from "./routes/operator";
 import { storageRouter } from "./routes/storage";
 
-// dotenv.config();
+dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3001;

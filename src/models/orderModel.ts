@@ -1,6 +1,5 @@
-import { Schema, Types, model } from "mongoose";
-import { CartItemSnapshotSchema, ICartItemSnapshot } from "./cartSnapshot";
-import { randomAlphanumeric } from "../helpers/alphanumericGenerator";
+import { Schema, Types, model } from 'mongoose';
+import { CartItemSnapshotSchema, ICartItemSnapshot } from './cartSnapshot';
 
 // --------------------------------------------------------------------------
 // Helpers
@@ -9,8 +8,11 @@ export const isCreateOrderData = (data: any): data is ICreateOrderData => {
   const unsafeCast = data as ICreateOrderData;
 
   return (
+    unsafeCast.user_name !== undefined &&
+    unsafeCast.user_number !== undefined &&
     unsafeCast.items_snapshot !== undefined &&
     unsafeCast.items_snapshot.length > 0 &&
+    unsafeCast.info !== undefined &&
     unsafeCast.interval !== undefined &&
     unsafeCast.cash_payment !== undefined &&
     unsafeCast.card_payment !== undefined &&
@@ -22,7 +24,10 @@ export const isCreateOrderData = (data: any): data is ICreateOrderData => {
 // Interface / Schema / Model
 
 export interface ICreateOrderData {
+  user_name: string;
+  user_number: string;
   items_snapshot: ICartItemSnapshot[];
+  info: string;
   interval: string;
   cash_payment: boolean;
   card_payment: boolean;
@@ -41,8 +46,11 @@ export interface IOrder {
   _id?: Types.ObjectId;
   code: string;
   user_id: string;
+  user_name: string;
+  user_number: string;
   interval: string;
   items: ICartItemSnapshot[];
+  info: string;
   total: number;
   status: string;
   cash_payment: boolean;
@@ -54,9 +62,17 @@ export interface IOrder {
 const OrderSchema = new Schema<IOrder>({
   code: {
     type: String,
-    default: "AAAAA",
+    default: 'AAAAA',
   },
   user_id: {
+    type: String,
+    required: true,
+  },
+  user_name: {
+    type: String,
+    required: true,
+  },
+  user_number: {
     type: String,
     required: true,
   },
@@ -68,6 +84,10 @@ const OrderSchema = new Schema<IOrder>({
     type: [CartItemSnapshotSchema],
     required: true,
   },
+  info: {
+    type: String,
+    required: true,
+  },
   total: {
     type: Number,
     required: true,
@@ -76,16 +96,16 @@ const OrderSchema = new Schema<IOrder>({
     type: String,
     required: true,
     enum: [
-      "pending",
-      "submitted",
-      "accepted",
-      "rejected",
-      "ready",
-      "stalled",
-      "refunded",
-      "completed",
+      'pending',
+      'submitted',
+      'accepted',
+      'rejected',
+      'ready',
+      'stalled',
+      'refunded',
+      'completed',
     ],
-    default: "pending",
+    default: 'pending',
   },
   cash_payment: {
     type: Boolean,
@@ -97,7 +117,7 @@ const OrderSchema = new Schema<IOrder>({
   },
   card_payment_intent: {
     type: String,
-    default: "",
+    default: '',
   },
   created_at: {
     type: Date,
@@ -105,4 +125,4 @@ const OrderSchema = new Schema<IOrder>({
   },
 });
 
-export const Order = model<IOrder>("Order", OrderSchema);
+export const Order = model<IOrder>('Order', OrderSchema);
