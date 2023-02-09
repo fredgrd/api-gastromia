@@ -101,7 +101,7 @@ export const createOrder = async (req: Request, res: Response) => {
       user_number: data.user_number,
       code: randomAlphanumeric(5),
       items: included,
-      info: data.info,
+      info: data.info.length > 0 ? data.info : 'No instructions provided',
       total: total,
       interval: data.interval,
       status: data.cash_payment ? 'submitted' : 'pending',

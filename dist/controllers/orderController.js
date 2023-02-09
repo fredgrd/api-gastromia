@@ -87,7 +87,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             user_number: data.user_number,
             code: (0, alphanumericGenerator_1.randomAlphanumeric)(5),
             items: included,
-            info: data.info,
+            info: data.info.length > 0 ? data.info : 'No instructions provided',
             total: total,
             interval: data.interval,
             status: data.cash_payment ? 'submitted' : 'pending',
