@@ -26,15 +26,15 @@ const authenticateOperator_1 = __importDefault(require("../helpers/authenticateO
 //// If the items validation fails it returns a CartUpdate object
 //// If the order creation succeeds it returns the order id w/ status
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const authToken = (0, authenticateUser_1.default)(req, res, "CreateOrder");
+    const authToken = (0, authenticateUser_1.default)(req, res, 'CreateOrder');
     if (!authToken) {
         return;
     }
     const data = req.body;
     // Check data
     if (!data || !(0, orderModel_1.isCreateOrderData)(data)) {
-        console.log("CreateOrder error: InvalidData");
-        res.status(400).send("InvalidData");
+        console.log('CreateOrder error: InvalidData');
+        res.status(400).send('InvalidData');
         return;
     }
     // START VALIDATION
@@ -45,7 +45,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     ...new Set(data.items_snapshot.map((e) => new mongoose_1.Types.ObjectId(e.item_id))),
                 ],
             },
-        }).populate("attribute_groups.attributes");
+        }).populate('attribute_groups.attributes');
         const castedItems = items.filter((e) => (0, itemModel_1.isItem)(e));
         // Validate
         const { included, excluded } = (0, cartUtils_1.validateCartSnapshot)(castedItems, data.items_snapshot);
@@ -75,19 +75,22 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 intentId = result.id;
             }
             else {
-                console.log("CreateOrder error: PaymentIntentError");
-                res.status(500).send("PaymentIntentError");
+                console.log('CreateOrder error: PaymentIntentError');
+                res.status(500).send('PaymentIntentError');
                 return;
             }
         }
         // Create order
         const order = yield orderModel_1.Order.create({
             user_id: authToken.id,
+            user_name: data.user_name,
+            user_number: data.user_number,
             code: (0, alphanumericGenerator_1.randomAlphanumeric)(5),
             items: included,
+            info: data.info,
             total: total,
             interval: data.interval,
-            status: data.cash_payment ? "submitted" : "pending",
+            status: data.cash_payment ? 'submitted' : 'pending',
             cash_payment: data.cash_payment,
             card_payment: data.card_payment,
             card_payment_intent: intentId,
@@ -110,7 +113,7 @@ exports.createOrder = createOrder;
 // Update the user order when purchasing with a card
 // The order is updated from pending to submitted when the card payment is successfull
 const updatePaidOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const authToken = (0, authenticateUser_1.default)(req, res, "UpdatePaidOrder");
+    const authToken = (0, authenticateUser_1.default)(req, res, 'UpdatePaidOrder');
     if (!authToken) {
         return;
     }
@@ -119,10 +122,10 @@ const updatePaidOrder = (req, res) => __awaiter(void 0, void 0, void 0, function
     if (id && orderId) {
         const stripeService = new stripeService_1.default();
         const paymentIntent = yield stripeService.fetchPaymentIntent(id);
-        if (paymentIntent && paymentIntent.status === "succeeded") {
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
             try {
                 yield orderModel_1.Order.findByIdAndUpdate(orderId, {
-                    status: "submitted",
+                    status: 'submitted',
                 }).orFail();
                 res.sendStatus(200);
             }
@@ -133,20 +136,20 @@ const updatePaidOrder = (req, res) => __awaiter(void 0, void 0, void 0, function
             }
         }
         else {
-            console.log("UpdatePaidOrder error: PaymentNotCompleted");
-            res.status(400).send("PaymentNotCompleted");
+            console.log('UpdatePaidOrder error: PaymentNotCompleted');
+            res.status(400).send('PaymentNotCompleted');
         }
     }
     else {
-        console.log("UpdatePaidOrder error: SecretNotProvided");
-        res.status(400).send("SecretNotProvided");
+        console.log('UpdatePaidOrder error: SecretNotProvided');
+        res.status(400).send('SecretNotProvided');
     }
 });
 exports.updatePaidOrder = updatePaidOrder;
 // Fetch the user orders documents
 // Only used by the Gastromia WebApp to retrieve all the orders matching the user_id
 const fetchOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const authToken = (0, authenticateUser_1.default)(req, res, "CreateOrder");
+    const authToken = (0, authenticateUser_1.default)(req, res, 'CreateOrder');
     if (!authToken) {
         return;
     }
@@ -165,14 +168,14 @@ exports.fetchOrders = fetchOrders;
 // Orders not active are not returned to the operator
 // Used only by the Hub Manager
 const fetchActiveOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const operatorToken = (0, authenticateOperator_1.default)(req, res, "FetchActiveOrders");
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'FetchActiveOrders');
     if (!operatorToken) {
         return;
     }
     try {
         const orders = yield orderModel_1.Order.find({
             status: {
-                $in: ["submitted", "accepted", "ready"],
+                $in: ['submitted', 'accepted', 'ready'],
             },
         }).orFail();
         res.status(200).json({ orders: orders });
@@ -187,7 +190,7 @@ exports.fetchActiveOrders = fetchActiveOrders;
 // Fetches all the orders received
 // Used only by the Hub Manager
 const fetchAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const operatorToken = (0, authenticateOperator_1.default)(req, res, "FetchAllOrders");
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'FetchAllOrders');
     if (!operatorToken) {
         return;
     }
@@ -205,13 +208,13 @@ exports.fetchAllOrders = fetchAllOrders;
 // Fetches a specific order for the operator
 // Used only by the Hub Manager
 const fetchOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const operatorToken = (0, authenticateOperator_1.default)(req, res, "UpdateOrderStatus");
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'UpdateOrderStatus');
     if (!operatorToken) {
         return;
     }
     const orderId = req.query.o;
-    if (!orderId || typeof orderId !== "string") {
-        console.log("UpdateOrderStatus error: NoOrderProvided");
+    if (!orderId || typeof orderId !== 'string') {
+        console.log('UpdateOrderStatus error: NoOrderProvided');
         res.sendStatus(400);
         return;
     }
@@ -229,29 +232,29 @@ exports.fetchOrder = fetchOrder;
 // Update the order status
 // Used only by the Hub Manager
 const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const operatorToken = (0, authenticateOperator_1.default)(req, res, "UpdateOrderStatus");
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'UpdateOrderStatus');
     if (!operatorToken) {
         return;
     }
     const orderId = req.body.order_id;
     const status = req.body.status;
-    if (!orderId || typeof orderId !== "string") {
-        console.log("UpdateOrderStatus error: NoOrderProvided");
+    if (!orderId || typeof orderId !== 'string') {
+        console.log('UpdateOrderStatus error: NoOrderProvided');
         res.sendStatus(400);
         return;
     }
-    if (!status || typeof status !== "string") {
-        console.log("UpdateOrderStatus error: NoStatusProvided");
+    if (!status || typeof status !== 'string') {
+        console.log('UpdateOrderStatus error: NoStatusProvided');
         res.sendStatus(400);
         return;
     }
     try {
         let order = yield orderModel_1.Order.findById(orderId).orFail();
-        if (order.card_payment && status === "rejected") {
+        if (order.card_payment && status === 'rejected') {
             const stripe = new stripeService_1.default();
             const refunded = yield stripe.refundPaymentIntent(order.card_payment_intent);
-            if (refunded && refunded.status === "succeeded") {
-                order.status = "refunded";
+            if (refunded && refunded.status === 'succeeded') {
+                order.status = 'refunded';
                 yield order.save();
                 res.status(200).json({ order: order });
                 return;
@@ -261,8 +264,8 @@ const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 return;
             }
         }
-        if (status === "rejected") {
-            order.status = "rejected";
+        if (status === 'rejected') {
+            order.status = 'rejected';
             yield order.save();
             res.status(200).json({ order: order });
             return;
