@@ -20,14 +20,14 @@ const operatorModel_1 = require("../models/operatorModel");
 // Returns an OperatorToken
 const loginOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    if (!email || typeof email !== "string") {
-        console.log("LoginOperator error: NoEmail");
-        res.status(400).send("NoEmail");
+    if (!email || typeof email !== 'string') {
+        console.log('LoginOperator error: NoEmail');
+        res.status(400).send('NoEmail');
         return;
     }
-    if (!password || typeof password !== "string") {
-        console.log("LoginOperator error: NoPassword");
-        res.status(400).send("NoPassword");
+    if (!password || typeof password !== 'string') {
+        console.log('LoginOperator error: NoPassword');
+        res.status(400).send('NoPassword');
         return;
     }
     try {
@@ -36,11 +36,11 @@ const loginOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (passwordMatch) {
             // Set cookie
             const token = (0, jwtTokens_1.signOperatorToken)({ id: operator.id });
-            res.cookie("operator_token", token, {
+            res.cookie('operator_token', token, {
                 maxAge: 60 * 60 * 24 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
-                domain: "gastromia.com",
+                domain: 'gastromia.com',
             });
             res.status(200).json({
                 _id: operator.id,
@@ -50,14 +50,14 @@ const loginOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             });
         }
         else {
-            console.log("LoginOperator error: WrongPassword");
-            res.status(400).send("WrongPassword");
+            console.log('LoginOperator error: WrongPassword');
+            res.status(400).send('WrongPassword');
         }
     }
     catch (error) {
         const mongooseError = error;
-        if (mongooseError.name === "DocumentNotFoundError") {
-            res.status(400).send("No Email");
+        if (mongooseError.name === 'DocumentNotFoundError') {
+            res.status(400).send('No Email');
             return;
         }
         console.log(`LoginOperator error: ${mongooseError.name} ${mongooseError.message}`);
@@ -68,19 +68,23 @@ exports.loginOperator = loginOperator;
 // Logs out the operator
 // Removes the OperatorToken from the browser
 const logoutOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("operator_token");
+    res.clearCookie('operator_token', {
+        httpOnly: true,
+        secure: true,
+        domain: 'gastromia.com',
+    });
     res.sendStatus(200);
 });
 exports.logoutOperator = logoutOperator;
 const fetchOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const operatorToken = (0, authenticateOperator_1.default)(req, res, "FetchOperator");
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'FetchOperator');
     if (!operatorToken) {
         return;
     }
     try {
         const operator = yield operatorModel_1.Operator.findById(operatorToken.id).orFail();
         const token = (0, jwtTokens_1.signOperatorToken)({ id: operator.id });
-        res.cookie("operator_token", token, {
+        res.cookie('operator_token', token, {
             maxAge: 60 * 60 * 24 * 10 * 1000,
             httpOnly: true,
             secure: true,

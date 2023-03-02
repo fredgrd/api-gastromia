@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.detachCard = exports.fetchCards = exports.createSetupIntent = void 0;
-const User_1 = __importDefault(require("../helpers/authenticateUser"));
+const authenticateUser_1 = __importDefault(require("../helpers/authenticateUser"));
 const stripeService_1 = __importDefault(require("../services/stripeService"));
 // Creates a card setupintent w/ Strip SDK
 // Used only by the Gastromia WebApp

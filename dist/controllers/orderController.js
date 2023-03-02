@@ -30,7 +30,8 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!authToken) {
         return;
     }
-    const data = req.body;
+    const data = req.body.data;
+    const couponCode = req.body.coupon_code;
     // Check data
     if (!data || !(0, orderModel_1.isCreateOrderData)(data)) {
         console.log('CreateOrder error: InvalidData');
@@ -64,7 +65,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         // Price snapshot
-        const total = (0, cartUtils_1.priceCartSnapshot)(included);
+        let total = (0, cartUtils_1.priceCartSnapshot)(included);
         let clientSecret;
         let intentId;
         if (data.card_payment) {

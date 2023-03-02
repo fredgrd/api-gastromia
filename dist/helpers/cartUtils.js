@@ -1,7 +1,17 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.priceCartSnapshot = exports.validateCartSnapshot = void 0;
+exports.validateCoupon = exports.priceCartSnapshot = exports.validateCartSnapshot = void 0;
 const itemAttributeModel_1 = require("../models/itemAttributeModel");
+const couponModel_1 = require("../models/couponModel");
 // Validate CartSnapshot
 const validateCartSnapshot = (items, snapshotItems) => {
     // Validate the snapshot
@@ -29,7 +39,7 @@ const validateCartSnapshot = (items, snapshotItems) => {
         if (!item.available) {
             excluded.push({
                 item: snapshotItem,
-                message: "Prodotto non è disponibile",
+                message: 'Prodotto non è disponibile',
             });
             continue;
         }
@@ -38,7 +48,7 @@ const validateCartSnapshot = (items, snapshotItems) => {
         if ((item.discount ? item.discount_price : item.price) !== snapshotItem.price) {
             excluded.push({
                 item: snapshotItem,
-                message: "Prodotto non aggiornato",
+                message: 'Prodotto non aggiornato',
             });
             continue;
         }
@@ -70,7 +80,7 @@ const validateCartSnapshot = (items, snapshotItems) => {
             if (!attribute.available) {
                 excluded.push({
                     item: snapshotItem,
-                    message: "Una o più aggiunte non disponibili",
+                    message: 'Una o più aggiunte non disponibili',
                 });
                 attributesValid = false;
                 break;
@@ -78,7 +88,7 @@ const validateCartSnapshot = (items, snapshotItems) => {
             if (attribute.price !== snapshotAttribute.price) {
                 excluded.push({
                     item: snapshotItem,
-                    message: "Una o più aggiunte non aggiornate",
+                    message: 'Una o più aggiunte non aggiornate',
                 });
                 attributesValid = false;
                 break;
@@ -158,3 +168,29 @@ const priceCartSnapshot = (items) => {
     return total;
 };
 exports.priceCartSnapshot = priceCartSnapshot;
+/**
+ * Validate the coupon code provided.
+ *
+ * @param code String. Coupon code.
+ */
+const validateCoupon = (code) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const coupon = yield couponModel_1.Coupon.findOne({ code: code }).orFail();
+        if (coupon.redemptions >= coupon.redemptions_max) {
+            return null;
+        }
+        const date = new Date();
+        if (date > coupon.expiry_date) {
+            return null;
+        }
+        coupon.redemptions += 1;
+        yield coupon.save();
+        return coupon;
+    }
+    catch (error) {
+        const mongooseError = error;
+        console.log(`ValidateCoupon error: ${mongooseError.name} ${mongooseError.message}`);
+        return null;
+    }
+});
+exports.validateCoupon = validateCoupon;

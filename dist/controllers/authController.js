@@ -66,18 +66,18 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     stripe_id: user.stripe_id,
                     number: user.number,
                 });
-                res.cookie("auth_token", token, {
+                res.cookie('auth_token', token, {
                     maxAge: 60 * 60 * 24 * 10 * 1000,
                     httpOnly: true,
                     secure: true,
-                    domain: "gastromia.com",
+                    domain: 'gastromia.com',
                 });
-                res.status(200).json({ user: user, status: "UserExists" });
+                res.status(200).json({ user: user, status: 'UserExists' });
                 return;
             }
             catch (error) {
                 const mongooseError = error;
-                if (mongooseError.name !== "DocumentNotFoundError") {
+                if (mongooseError.name !== 'DocumentNotFoundError') {
                     console.log(`CheckVerification error: ${mongooseError.name}`);
                     res.sendStatus(500);
                     return;
@@ -85,13 +85,13 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
             }
             // If user does not exist create a SignupToken
             const token = (0, jwtTokens_1.signSignupToken)(number);
-            res.cookie("signup_token", token, {
+            res.cookie('signup_token', token, {
                 maxAge: 60 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
-                domain: "gastromia.com",
+                domain: 'gastromia.com',
             });
-            res.status(200).json({ user: null, status: "NewUser" });
+            res.status(200).json({ user: null, status: 'NewUser' });
             break;
         case twilioService_1.TwilioService.CreateVerificationCheckStatus.Failed:
         case twilioService_1.TwilioService.CreateVerificationCheckStatus.CheckError:
@@ -106,7 +106,11 @@ exports.completeVerification = completeVerification;
 // Logous out the user
 // Clears the user AuthToken from the browser
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("auth_token");
+    res.clearCookie('auth_token', {
+        httpOnly: true,
+        secure: true,
+        domain: 'gastromia.com',
+    });
     res.sendStatus(200);
 });
 exports.logout = logout;
