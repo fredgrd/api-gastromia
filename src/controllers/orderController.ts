@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import { MongooseError, Types } from 'mongoose';
 import { Item, IItem, isItem } from '../models/itemModel';
-import { priceCartSnapshot, validateCartSnapshot } from '../helpers/cartUtils';
+import {
+  priceCartSnapshot,
+  validateCartSnapshot,
+  validateCoupon,
+} from '../helpers/cartUtils';
 import { Cart } from '../models/cartModel';
 import StripeService from '../services/stripeService';
 import authenticateUser from '../helpers/authenticateUser';
@@ -24,7 +28,8 @@ export const createOrder = async (req: Request, res: Response) => {
     return;
   }
 
-  const data: ICreateOrderData | undefined = req.body;
+  const data: ICreateOrderData | undefined = req.body.data;
+  const couponCode: string | any = req.body.coupon_code;
 
   // Check data
   if (!data || !isCreateOrderData(data)) {
@@ -73,7 +78,7 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     // Price snapshot
-    const total = priceCartSnapshot(included);
+    let total = priceCartSnapshot(included);
 
     let clientSecret: string | null | undefined;
     let intentId: string | undefined;

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import { TwilioService } from "../services/twilioService";
-import { User } from "../models/userModel";
-import { signAuthToken, signSignupToken } from "../helpers/jwtTokens";
-import { MongooseError } from "mongoose";
+import { Request, Response } from 'express';
+import { TwilioService } from '../services/twilioService';
+import { User } from '../models/userModel';
+import { signAuthToken, signSignupToken } from '../helpers/jwtTokens';
+import { MongooseError } from 'mongoose';
 
 // Starts the phone number verification
 // Checks if the provided number is valid and well formatted
@@ -64,19 +64,19 @@ export const completeVerification = async (req: Request, res: Response) => {
           number: user.number,
         });
 
-        res.cookie("auth_token", token, {
+        res.cookie('auth_token', token, {
           maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
           httpOnly: true,
           secure: true,
-          domain: "gastromia.com",
+          domain: 'gastromia.com',
         });
 
-        res.status(200).json({ user: user, status: "UserExists" });
+        res.status(200).json({ user: user, status: 'UserExists' });
         return;
       } catch (error) {
         const mongooseError = error as MongooseError;
 
-        if (mongooseError.name !== "DocumentNotFoundError") {
+        if (mongooseError.name !== 'DocumentNotFoundError') {
           console.log(`CheckVerification error: ${mongooseError.name}`);
           res.sendStatus(500);
           return;
@@ -85,14 +85,14 @@ export const completeVerification = async (req: Request, res: Response) => {
 
       // If user does not exist create a SignupToken
       const token = signSignupToken(number);
-      res.cookie("signup_token", token, {
+      res.cookie('signup_token', token, {
         maxAge: 60 * 10 * 1000, // 60s * 10m => 10 minutes in seconds => in milliseconds
         httpOnly: true,
         secure: true,
-        domain: "gastromia.com",
+        domain: 'gastromia.com',
       });
 
-      res.status(200).json({ user: null, status: "NewUser" });
+      res.status(200).json({ user: null, status: 'NewUser' });
       break;
     case TwilioService.CreateVerificationCheckStatus.Failed:
     case TwilioService.CreateVerificationCheckStatus.CheckError:
@@ -107,6 +107,10 @@ export const completeVerification = async (req: Request, res: Response) => {
 // Logous out the user
 // Clears the user AuthToken from the browser
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("auth_token");
+  res.clearCookie('auth_token', {
+    httpOnly: true,
+    secure: true,
+    domain: 'gastromia.com',
+  });
   res.sendStatus(200);
 };

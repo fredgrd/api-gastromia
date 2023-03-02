@@ -1,6 +1,8 @@
-import { IItem } from "../models/itemModel";
-import { IItemAttribute, isItemAttribute } from "../models/itemAttributeModel";
-import { ICartItemSnapshot } from "../models/cartSnapshot";
+import { IItem } from '../models/itemModel';
+import { IItemAttribute, isItemAttribute } from '../models/itemAttributeModel';
+import { ICartItemSnapshot } from '../models/cartSnapshot';
+import { Coupon, ICoupon } from '../models/couponModel';
+import { MongooseError } from 'mongoose';
 
 // Validate CartSnapshot
 export const validateCartSnapshot = (
@@ -38,7 +40,7 @@ export const validateCartSnapshot = (
     if (!item.available) {
       excluded.push({
         item: snapshotItem,
-        message: "Prodotto non è disponibile",
+        message: 'Prodotto non è disponibile',
       });
       continue;
     }
@@ -50,7 +52,7 @@ export const validateCartSnapshot = (
     ) {
       excluded.push({
         item: snapshotItem,
-        message: "Prodotto non aggiornato",
+        message: 'Prodotto non aggiornato',
       });
       continue;
     }
@@ -96,7 +98,7 @@ export const validateCartSnapshot = (
       if (!attribute.available) {
         excluded.push({
           item: snapshotItem,
-          message: "Una o più aggiunte non disponibili",
+          message: 'Una o più aggiunte non disponibili',
         });
         attributesValid = false;
         break;
@@ -105,7 +107,7 @@ export const validateCartSnapshot = (
       if (attribute.price !== snapshotAttribute.price) {
         excluded.push({
           item: snapshotItem,
-          message: "Una o più aggiunte non aggiornate",
+          message: 'Una o più aggiunte non aggiornate',
         });
         attributesValid = false;
         break;
@@ -206,4 +208,35 @@ export const priceCartSnapshot = (items: ICartItemSnapshot[]): number => {
   }, 0);
 
   return total;
+};
+
+/**
+ * Validate the coupon code provided.
+ *
+ * @param code String. Coupon code.
+ */
+export const validateCoupon = async (code: string): Promise<ICoupon | null> => {
+  try {
+    const coupon = await Coupon.findOne({ code: code }).orFail();
+
+    if (coupon.redemptions >= coupon.redemptions_max) {
+      return null;
+    }
+
+    const date = new Date();
+    if (date > coupon.expiry_date) {
+      return null;
+    }
+
+    coupon.redemptions += 1;
+    await coupon.save();
+
+    return coupon;
+  } catch (error) {
+    const mongooseError = error as MongooseError;
+    console.log(
+      `ValidateCoupon error: ${mongooseError.name} ${mongooseError.message}`
+    );
+    return null;
+  }
 };
