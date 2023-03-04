@@ -31,10 +31,11 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!authToken) {
         return;
     }
-    const data = req.body.data;
+    const data = req.body;
     // const couponCode: string | any = req.body.coupon_code;
     // Check data
     if (!data || !(0, orderModel_1.isCreateOrderData)(data)) {
+        console.log(data);
         console.log('CreateOrder error: InvalidData');
         res.status(400).send('InvalidData');
         return;

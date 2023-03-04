@@ -29,11 +29,12 @@ export const createOrder = async (req: Request, res: Response) => {
     return;
   }
 
-  const data: ICreateOrderData | undefined = req.body.data;
+  const data: ICreateOrderData | undefined = req.body;
   // const couponCode: string | any = req.body.coupon_code;
 
   // Check data
   if (!data || !isCreateOrderData(data)) {
+    console.log(data);
     console.log('CreateOrder error: InvalidData');
     res.status(400).send('InvalidData');
     return;
