@@ -29,11 +29,61 @@ var WhatsappMessage;
 })(WhatsappMessage = exports.WhatsappMessage || (exports.WhatsappMessage = {}));
 class FacebookService {
     constructor() {
-        this.token = "Bearer " + process.env.FACEBOOK_AUTH_TOKEN;
-        this.apiVersion = process.env.FACEBOOK_API_VERSION || "";
-        this.phoneNumberId = process.env.FACEBOOK_PHONE_NUMBER_ID || "";
+        this.token = 'Bearer ' + process.env.FACEBOOK_AUTH_TOKEN;
+        this.apiVersion = process.env.FACEBOOK_API_VERSION || '';
+        this.phoneNumberId = process.env.FACEBOOK_PHONE_NUMBER_ID || '';
         this.acceptOrderPhoneNumber =
-            process.env.WHATSAPP_ACCEPT_ORDER_PHONE_NUMBER || "";
+            process.env.WHATSAPP_ACCEPT_ORDER_PHONE_NUMBER || '';
+    }
+    sendUpdate(update, to, orderCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let template = '';
+            if (update === 'accepted') {
+                template = 'order_accept';
+            }
+            else if (update === 'rejected') {
+                template = 'order_rejected';
+            }
+            else if (update === 'ready') {
+                template = 'order_ready';
+            }
+            else if (update === 'completed') {
+                template = 'order_completed';
+            }
+            const payload = {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: to,
+                type: 'template',
+                template: {
+                    name: template,
+                    language: {
+                        code: 'it',
+                    },
+                    components: [
+                        {
+                            type: 'header',
+                            parameters: [
+                                {
+                                    type: 'text',
+                                    text: orderCode,
+                                },
+                            ],
+                        },
+                    ],
+                },
+            };
+            try {
+                yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, payload, {
+                    headers: {
+                        Authorization: this.token,
+                    },
+                });
+            }
+            catch (error) {
+                console.log(error);
+            }
+        });
     }
     sendMessage(message, to) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -81,10 +131,10 @@ class FacebookService {
             const orderCode = (0, alphanumericGenerator_1.randomAlphanumeric)(4);
             try {
                 const response = yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, {
-                    messaging_product: "whatsapp",
-                    recipient_type: "individual",
+                    messaging_product: 'whatsapp',
+                    recipient_type: 'individual',
                     to: this.acceptOrderPhoneNumber,
-                    type: "text",
+                    type: 'text',
                     text: {
                         preview_url: false,
                         body: `ORDER: *${orderCode}*\n\nFROM: +${from}\n\n${order}`,
@@ -96,10 +146,10 @@ class FacebookService {
                 });
                 if (response.status === 200) {
                     yield axios_1.default.post(`https://graph.facebook.com/${this.apiVersion}/${this.phoneNumberId}/messages`, {
-                        messaging_product: "whatsapp",
-                        recipient_type: "individual",
+                        messaging_product: 'whatsapp',
+                        recipient_type: 'individual',
                         to: from,
-                        type: "text",
+                        type: 'text',
                         text: {
                             preview_url: false,
                             body: `Ordine accettato 🎉\n\nIl tuo codice di riferimento: *${orderCode}*\n\n_In caso di problemi contatta il numero +39 333 789 0510_`,

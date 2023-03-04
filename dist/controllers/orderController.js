@@ -22,6 +22,7 @@ const authenticateUser_1 = __importDefault(require("../helpers/authenticateUser"
 const orderModel_1 = require("../models/orderModel");
 const alphanumericGenerator_1 = require("../helpers/alphanumericGenerator");
 const authenticateOperator_1 = __importDefault(require("../helpers/authenticateOperator"));
+const facebookService_1 = require("../services/facebookService");
 // Creates the order
 //// If the items validation fails it returns a CartUpdate object
 //// If the order creation succeeds it returns the order id w/ status
@@ -31,7 +32,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return;
     }
     const data = req.body.data;
-    const couponCode = req.body.coupon_code;
+    // const couponCode: string | any = req.body.coupon_code;
     // Check data
     if (!data || !(0, orderModel_1.isCreateOrderData)(data)) {
         console.log('CreateOrder error: InvalidData');
@@ -233,10 +234,11 @@ exports.fetchOrder = fetchOrder;
 // Update the order status
 // Used only by the Hub Manager
 const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'UpdateOrderStatus');
-    if (!operatorToken) {
-        return;
-    }
+    // const operatorToken = authenticateOperator(req, res, 'UpdateOrderStatus');
+    //
+    // if (!operatorToken) {
+    //   return;
+    // }
     const orderId = req.body.order_id;
     const status = req.body.status;
     if (!orderId || typeof orderId !== 'string') {
@@ -250,31 +252,34 @@ const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, functi
         return;
     }
     try {
-        let order = yield orderModel_1.Order.findById(orderId).orFail();
+        const order = yield orderModel_1.Order.findById(orderId).orFail();
+        const facebookService = new facebookService_1.FacebookService();
+        // Refund the order if was rejected and paid by card
         if (order.card_payment && status === 'rejected') {
             const stripe = new stripeService_1.default();
             const refunded = yield stripe.refundPaymentIntent(order.card_payment_intent);
             if (refunded && refunded.status === 'succeeded') {
                 order.status = 'refunded';
                 yield order.save();
+                yield facebookService.sendUpdate('rejected', order.user_number, order.code);
                 res.status(200).json({ order: order });
-                return;
             }
             else {
                 res.sendStatus(500);
-                return;
             }
         }
-        if (status === 'rejected') {
-            order.status = 'rejected';
+        else {
+            order.status = status;
             yield order.save();
+            yield facebookService.sendUpdate(status, order.user_number, order.code);
             res.status(200).json({ order: order });
-            return;
         }
-        order.status = status;
-        yield order.save();
-        res.status(200).json({ order: order });
-        return;
+        // if (status === 'rejected') {
+        //   order.status = 'rejected';
+        //   await order.save();
+        //   res.status(200).json({ order: order });
+        //   return;
+        // }
     }
     catch (error) {
         const mongooseError = error;

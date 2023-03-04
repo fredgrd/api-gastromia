@@ -88,6 +88,7 @@ export const fetchOperator = async (req: Request, res: Response) => {
       maxAge: 60 * 60 * 24 * 10 * 1000, // 60s * 60m * 24h * 10d => 10 Days in secods => in milliseconds
       httpOnly: true,
       secure: true,
+      domain: 'gastromia.com',
     });
 
     res.status(200).json({

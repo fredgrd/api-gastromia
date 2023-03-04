@@ -17,6 +17,7 @@ import {
 } from '../models/orderModel';
 import { randomAlphanumeric } from '../helpers/alphanumericGenerator';
 import authenticateOperator from '../helpers/authenticateOperator';
+import { FacebookService } from '../services/facebookService';
 
 // Creates the order
 //// If the items validation fails it returns a CartUpdate object
@@ -29,7 +30,7 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 
   const data: ICreateOrderData | undefined = req.body.data;
-  const couponCode: string | any = req.body.coupon_code;
+  // const couponCode: string | any = req.body.coupon_code;
 
   // Check data
   if (!data || !isCreateOrderData(data)) {
@@ -268,11 +269,11 @@ export const fetchOrder = async (req: Request, res: Response) => {
 // Update the order status
 // Used only by the Hub Manager
 export const updateOrderStatus = async (req: Request, res: Response) => {
-  const operatorToken = authenticateOperator(req, res, 'UpdateOrderStatus');
-
-  if (!operatorToken) {
-    return;
-  }
+  // const operatorToken = authenticateOperator(req, res, 'UpdateOrderStatus');
+  //
+  // if (!operatorToken) {
+  //   return;
+  // }
 
   const orderId: string | any = req.body.order_id;
   const status: string | any = req.body.status;
@@ -290,8 +291,11 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   }
 
   try {
-    let order = await Order.findById(orderId).orFail();
+    const order = await Order.findById(orderId).orFail();
 
+    const facebookService = new FacebookService();
+
+    // Refund the order if was rejected and paid by card
     if (order.card_payment && status === 'rejected') {
       const stripe = new StripeService();
 
@@ -302,27 +306,29 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       if (refunded && refunded.status === 'succeeded') {
         order.status = 'refunded';
         await order.save();
-
+        await facebookService.sendUpdate(
+          'rejected',
+          order.user_number,
+          order.code
+        );
         res.status(200).json({ order: order });
-        return;
       } else {
         res.sendStatus(500);
-        return;
       }
-    }
-
-    if (status === 'rejected') {
-      order.status = 'rejected';
+    } else {
+      order.status = status;
       await order.save();
-
+      await facebookService.sendUpdate(status, order.user_number, order.code);
       res.status(200).json({ order: order });
-      return;
     }
 
-    order.status = status;
-    await order.save();
-    res.status(200).json({ order: order });
-    return;
+    // if (status === 'rejected') {
+    //   order.status = 'rejected';
+    //   await order.save();
+
+    //   res.status(200).json({ order: order });
+    //   return;
+    // }
   } catch (error) {
     const mongooseError = error as MongooseError;
     console.log(mongooseError.message);
