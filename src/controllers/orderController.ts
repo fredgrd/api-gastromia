@@ -270,11 +270,11 @@ export const fetchOrder = async (req: Request, res: Response) => {
 // Update the order status
 // Used only by the Hub Manager
 export const updateOrderStatus = async (req: Request, res: Response) => {
-  // const operatorToken = authenticateOperator(req, res, 'UpdateOrderStatus');
-  //
-  // if (!operatorToken) {
-  //   return;
-  // }
+  const operatorToken = authenticateOperator(req, res, 'UpdateOrderStatus');
+
+  if (!operatorToken) {
+    return;
+  }
 
   const orderId: string | any = req.body.order_id;
   const status: string | any = req.body.status;

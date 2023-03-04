@@ -235,11 +235,10 @@ exports.fetchOrder = fetchOrder;
 // Update the order status
 // Used only by the Hub Manager
 const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const operatorToken = authenticateOperator(req, res, 'UpdateOrderStatus');
-    //
-    // if (!operatorToken) {
-    //   return;
-    // }
+    const operatorToken = (0, authenticateOperator_1.default)(req, res, 'UpdateOrderStatus');
+    if (!operatorToken) {
+        return;
+    }
     const orderId = req.body.order_id;
     const status = req.body.status;
     if (!orderId || typeof orderId !== 'string') {
