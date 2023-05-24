@@ -8,8 +8,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const connectDatabase = () => {
     const username = process.env.MONGODB_USERNAME;
     const password = process.env.MONGODB_PASSWORD;
-    console.log(username, password);
-    const uri = `mongodb+srv://${username}:${password}@cluster0.xq6fi.mongodb.net/?retryWrites=true&w=majority`;
+    const uri = `mongodb+srv://${username}:${password}@cluster0.fuyhkrt.mongodb.net/?retryWrites=true&w=majority`;
     mongoose_1.default.connect(uri, { dbName: "miaDB" }, (error) => {
         if (error) {
             console.log(`MongoDB connection error: ${error}`);
