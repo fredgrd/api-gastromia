@@ -7,7 +7,7 @@ The core components that make up the system are:
 - [hub-gastromia](https://github.com/fredgrd/hub-gastromia/) – Internal dashboard (live orders, item editing, statistics)
 - [api-gastromia](https://github.com/fredgrd/api-gastromia/) – Backend powering both web apps and connected services.
 
-## What is web-gastromia?
+## What is api-gastromia?
 
 The backend for both [web-gastromia](https://github.com/fredgrd/web-gastromia/) and [hub-gastromia](https://github.com/fredgrd/hub-gastromia/). Makes use of Express for client-to-server communication. The app integrates with a range of services to provide a smooth user experience to our customers, such as:
 
