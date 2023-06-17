@@ -47,6 +47,8 @@ app.use(cookieparser());
 /// Json
 app.use(express.json({ limit: '2mb' }));
 
+app.get('/', (_, res) => res.redirect('https://gastromia.app'));
+
 // Auth routes
 app.use('/auth', authRouter);
 
