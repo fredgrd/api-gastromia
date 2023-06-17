@@ -28,10 +28,10 @@ connectDatabase();
 /// Cors
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://www.gastromia.com',
-  'https://gastromia.com',
-  'https://www.hub.gastromia.com',
-  'https://hub.gastromia.com',
+  'https://www.gastromia.app',
+  'https://gastromia.app',
+  'https://www.hub.gastromia.app',
+  'https://hub.gastromia.app',
 ];
 
 const options: cors.CorsOptions = {

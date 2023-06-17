@@ -40,7 +40,7 @@ const loginOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 maxAge: 60 * 60 * 24 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
-                domain: 'gastromia.com',
+                domain: 'gastromia.app',
             });
             res.status(200).json({
                 _id: operator.id,
@@ -71,7 +71,7 @@ const logoutOperator = (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.clearCookie('operator_token', {
         httpOnly: true,
         secure: true,
-        domain: 'gastromia.com',
+        domain: 'gastromia.app',
     });
     res.sendStatus(200);
 });
@@ -88,7 +88,7 @@ const fetchOperator = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             maxAge: 60 * 60 * 24 * 10 * 1000,
             httpOnly: true,
             secure: true,
-            domain: 'gastromia.com',
+            domain: 'gastromia.app',
         });
         res.status(200).json({
             _id: operator.id,

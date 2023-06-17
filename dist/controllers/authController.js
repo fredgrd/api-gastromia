@@ -70,7 +70,7 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     maxAge: 60 * 60 * 24 * 10 * 1000,
                     httpOnly: true,
                     secure: true,
-                    domain: 'gastromia.com',
+                    domain: 'gastromia.app',
                 });
                 res.status(200).json({ user: user, status: 'UserExists' });
                 return;
@@ -89,7 +89,7 @@ const completeVerification = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 maxAge: 60 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
-                domain: 'gastromia.com',
+                domain: 'gastromia.app',
             });
             res.status(200).json({ user: null, status: 'NewUser' });
             break;
@@ -109,7 +109,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.clearCookie('auth_token', {
         httpOnly: true,
         secure: true,
-        domain: 'gastromia.com',
+        domain: 'gastromia.app',
     });
     res.sendStatus(200);
 });

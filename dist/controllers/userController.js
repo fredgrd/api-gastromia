@@ -38,7 +38,7 @@ const fetchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 60 * 60 * 24 * 10 * 1000,
             httpOnly: true,
             secure: true,
-            domain: "gastromia.com",
+            domain: "gastromia.app",
         });
         res.status(200).json(user);
     }
@@ -91,7 +91,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 maxAge: 60 * 60 * 24 * 10 * 1000,
                 httpOnly: true,
                 secure: true,
-                domain: "gastromia.com",
+                domain: "gastromia.app",
             });
             res.clearCookie("signup_token");
             res.status(200).json(user);
